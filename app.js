@@ -24,7 +24,8 @@ const options = {
 const swaggerSpec = swaggerJSDoc(options);
 const passportConfig = require("./passport");  // passport를 인자로 받는 익명함수 반환
 const userRouter = require('./routes/userRouter');  // router라는 변수에 .get(), .post()로 설정된거 반환
-const authRouter = require("./routes/authRouter");  // router라는 변수에 .get(), .post()로 설정된거 반환
+const authRouter = require("./routes/authRouter");  //             "
+const postRouter = require("./routes/postRouter");  //             "
 const app = express();
 const { sequelize } = require("./models");  // db라는 객체 반환 -> 그 안에 db.sequelize가 있음
 
@@ -55,8 +56,9 @@ app.use(passport.session());  // req.session 객체에 passport 정보를 저장
                               // deserializeUser를 호출하는 메소드
 
 //-------------------------------라우터 미들웨어 시작----------------------------------
-app.use('/api/user', userRouter);
 app.use("/api/auth", authRouter);
+app.use('/api/user', userRouter);
+app.use("/api/post", postRouter);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 //-------------------------------에러 핸들링 미들웨어 시작------------------------------
