@@ -3,16 +3,17 @@ require("dotenv").config();
 
 // npm으로 받은 패키지 불러오기
 import createError from "http-errors"
-import express from "express"
 import cookieParser from "cookie-parser"
 import logger from "morgan"
 import session from "express-session"
 import passport from "passport"
+import MySQLStore from "express-mysql-session"
 import swaggerUi from "swagger-ui-express"
 import swaggerJSDoc from "swagger-jsdoc"
+import express from "express"
 
 // const변수 설정
-const options = {
+const swaggerOptions = {
   swaggerDefinition: {
     info: {
       title: 'covey app rest api', // Title (required)
@@ -21,7 +22,15 @@ const options = {
   },
   apis: ['./routes/*'], // Path to the API docs
 };
-const swaggerSpec = swaggerJSDoc(options);
+const mysqlSessionOptions = {
+  host: 'localhost',
+  port: 3306,
+  user: 'root',
+  password: '1234',
+  database: 'covey'
+};
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
+const sessionStore = new MySQLStore(mysqlSessionOptions);
 const passportConfig = require("./passport");  // passport를 인자로 받는 익명함수 반환
 const userRouter = require('./routes/userRouter');  // router라는 변수에 .get(), .post()로 설정된거 반환
 const authRouter = require("./routes/authRouter");  //             "
@@ -45,6 +54,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   secret: process.env.COOKIE_SECRET,
+  store : sessionStore,
   cookie: {
     httpOnly: true,
     secure: false,
