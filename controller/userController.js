@@ -14,7 +14,9 @@ const findAllUser = async (req, res, next) => {
 
 const findUser = async (req, res, next) => {
     try {
-        const result = await User.findByPk(req.params.id);
+        const result = await User.findOne({
+            where : { id : req.user.id }
+        });
         if (!result) {
             res.status(404).json({ message : "Not Found"});
             return;
@@ -64,7 +66,7 @@ const modifyUser = async (req, res, next) => {
             name : name,
             email : email
         }, {
-            where : { id : req.params.id}
+            where : { id : req.user.id }
         });
 
         res.status(201).json(`${result}명의 회원정보가 성공적으로 수정되었습니다.`);
@@ -77,7 +79,7 @@ const modifyUser = async (req, res, next) => {
 // DELETE
 const deleteUser = async (req, res, next) => {
   try {
-      const result = await User.destroy({ where : { id : req.params.id }});
+      const result = await User.destroy({ where : { id : req.user.id }});
       res.status(201).json(`${result}명의 회원정보가 성공적으로 삭제되었습니다.`);
   } catch (err) {
       console.error(err);
