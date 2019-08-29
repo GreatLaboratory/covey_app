@@ -19,6 +19,14 @@ module.exports = (sequelize, DataTypes) => (
         address: {
             type: DataTypes.STRING(30),
             allowNull: true,
+        },
+        dueDate: {
+            type : DataTypes.STRING(15),
+            allowNull: true
+        },
+        description: {
+            type : DataTypes.STRING(50),
+            allowNull: true
         }
     }, {
         timestamps: true,
