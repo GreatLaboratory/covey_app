@@ -1,5 +1,5 @@
 import express from "express"
-import { findAllUser, createUser, findUser, modifyUser, deleteUser } from "../controller/userController"
+import { findAllUser, addUserInfo, findUser, modifyUser, deleteUser } from "../controller/userController"
 
 const router = express.Router();
 
@@ -9,8 +9,8 @@ router.get("/findAllUser", findAllUser);
 // user id로 해당 회원 조회
 router.get("/findUser", findUser);
 
-// req.body에 받은 json을 새로운 회원에 추가
-router.post("/createUser", createUser);
+// sns로그인 이후 추가로 회원정보 받기
+router.put("/addUserInfo", addUserInfo);
 
 // user id로 회원 정보 수정
 router.put("/modifyUser", modifyUser);
