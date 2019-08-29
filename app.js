@@ -65,6 +65,7 @@ app.use(passport.initialize());  // 요청req에 passport설정을 심고
 app.use(passport.session());  // req.session 객체에 passport 정보를 저장한다.
                               // req.session객체는 express-session에서 생성하므로 express-session미들웨어보다 뒤에 연결되어야 한다.
                               // deserializeUser를 호출하는 메소드
+                              // 여기서 req.user의 정보가 확실히 저장되고 밑에 있는 라우터들에서 주로 req.user.id를 가져다 쓴다.
 
 //-------------------------------라우터 미들웨어 시작----------------------------------
 app.use("/api/auth", authRouter);

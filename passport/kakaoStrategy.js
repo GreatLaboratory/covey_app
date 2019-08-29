@@ -8,6 +8,7 @@ module.exports = (passport) => {
         callbackURL: "/api/auth/kakao/callback"   // 맨 앞에 /(슬래쉬) 안붙혔다고 에러 이틀동안 고생함....
     }, async (accessToken, refreshToken, profile, done)=>{
         try {
+            console.log("kakao 로그인 전락 수행 시작");
             const exUser = await User.findOne({ where : { snsId: profile.id } });
             if (exUser) {
                 done(null, exUser);
