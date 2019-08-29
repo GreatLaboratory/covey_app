@@ -28,7 +28,8 @@ const findPost = async (req, res, next) => {
 
 const findPostByUserId = async (req, res, next) => {
   try {
-      const user = await User.findOne({ where: { id : 3 } });  // 원래는 3 자리에 req.user.id가 들어가야는게 맞음. 지금 잠깐 db select위해 테스트용
+      // const user = await User.findOne({ where: { id : req.user.id } });
+      const user = await User.findOne({ where: { id : 3 } });
       const posts = await user.getPosts();
       res.json(posts);
   } catch (err) {
@@ -47,7 +48,8 @@ const createPost = async (req, res, next) => {
             workingTime : Joi.string().required(),
             pay : Joi.string().required(),
             address : Joi.string().required(),
-
+            dueDate : Joi.string().required(),
+            description : Joi.string().required()
         };
         const joiResult = Joi.validate(req.body, schema);
         if (joiResult.error) {
@@ -57,15 +59,17 @@ const createPost = async (req, res, next) => {
         }
 
         // 작성한 input값 req.body에 저장 후 db에 insert하기
-        const { title, workingDate, workingTime, pay, address } = req.body;
+        const { title, workingDate, workingTime, pay, address, dueDate, description } = req.body;
         const result = await Post.create({
-            //userId : req.user.id,     // postman으로 request보내면 아직 세션에 req.user 속에 id가 지정되어있지 않기에 500 서버내부오류 뜬다.
-            userId : 3,  // 원래는 위의 방식으로 해야하지만 db에 insert하려고 일단은 이런 식으로 id값 보냄
+            //userId : req.user.id,
+            userId : 2,
             title : title,
             workingDate : workingDate,
             workingTime : workingTime,
             pay : pay,
-            address : address
+            address : address,
+            dueDate : dueDate,
+            description : description
         });
         res.status(201).json(result);
     } catch (err) {
@@ -77,7 +81,7 @@ const createPost = async (req, res, next) => {
 // PUT
 const modifyPost = async (req, res, next) => {
     try {
-        const { title, workingDate, workingTime, pay, address } = req.body;
+        const { title, workingDate, workingTime, pay, address, dueDate, description } = req.body;
 
         // 여기서 update함수는 업데이트된 레코드의 갯수를 리턴한다. 그래서 result는 1
         const result = await Post.update({
@@ -85,7 +89,9 @@ const modifyPost = async (req, res, next) => {
             workingDate : workingDate,
             workingTime : workingTime,
             pay : pay,
-            address : address
+            address : address,
+            dueDate : dueDate,
+            description : description
         }, {
             where : { id : req.params.id}
         });
