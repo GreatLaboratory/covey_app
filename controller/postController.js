@@ -4,7 +4,17 @@ const { Post, User } = require("../models");
 // GET
 const findAllPost = async (req, res, next) => {
   try {
-      const result = await Post.findAll();
+      const selectedRows = 2;  // 한 페이지 당 select되는 레코드 갯수
+      let pageNum = req.params.page; // 요청 페이지 넘버
+      let offset = 0;
+      if(pageNum > 1){
+          offset = selectedRows * (pageNum - 1);
+      }
+      const result = await Post.findAll({
+          offset : offset,
+          limit : selectedRows,   // 일단 한 페이지에 10개 로우씩 select하자
+          order : [["id", "DESC"]]  // 최근 등록 순으로 정렬
+      });
       res.json(result);
   }  catch (err) {
       console.error(err);
