@@ -1,21 +1,19 @@
 import express from "express"
-import { findAllUser, addUserInfo, findUser, modifyUser, deleteUser } from "../controller/userController"
+import { addUserInfo, findUser, modifyUser, deleteUser } from "../controller/userController"
 
+const { isLoggedIn } = require("./middleWares");
 const router = express.Router();
 
-// 모든 회원 목록 조회
-router.get("/findAllUser", findAllUser);
+// req.user.id로 현재 로그인된 회원 조회
+router.get("/findUser", isLoggedIn, findUser);
 
-// user id로 해당 회원 조회
-router.get("/findUser", findUser);
-
-// sns로그인 이후 추가로 회원정보 받기
+// sns로그인 직후 추가로 회원정보 받기
 router.put("/addUserInfo", addUserInfo);
 
-// user id로 회원 정보 수정
-router.put("/modifyUser", modifyUser);
+// req.user.id로 현재 로그인된 회원 정보 수정
+router.put("/modifyUser", isLoggedIn, modifyUser);
 
-// user id로 회원 정보 삭제
-router.delete("/deleteUser", deleteUser);
+// req.user.id로 현재 로그인된 회원 탈퇴
+router.delete("/deleteUser", isLoggedIn, deleteUser);
 
 module.exports = router;
