@@ -2,16 +2,6 @@ const { User } = require("../models");
 const Joi = require("joi");
 
 // GET
-const findAllUser = async (req, res, next) => {
-    try {
-        const result = await User.findAll();
-        res.json(result);
-    } catch (err) {
-        console.error(err);
-        next(err);
-    }
-};
-
 const findUser = async (req, res, next) => {
     try {
         const result = await User.findOne({
@@ -101,4 +91,4 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
-export { findAllUser, addUserInfo, findUser, modifyUser, deleteUser }
+export { addUserInfo, findUser, modifyUser, deleteUser }
