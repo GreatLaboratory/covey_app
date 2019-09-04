@@ -1,5 +1,7 @@
+import Joi from "joi"
+import multer from "multer"
+
 const { User } = require("../models");
-const Joi = require("joi");
 
 // GET
 const findUser = async (req, res, next) => {
@@ -19,6 +21,27 @@ const findUser = async (req, res, next) => {
 };
 
 // PUT
+const upload2 = multer();
+// upload는 미들웨어를 만드는 객체가 된다.
+// storage에는 파일 저장 방식과 경로, 파일명 등을 설정할 수 있다.
+// diskStorage를 사용해 이미지가 서버 디스크에 저장되도록 했고 destination메소드로 저장경로를 uploads폴더로 지정한다.
+// 파일명은 filename메소드로 기존이름+날짜+기존확장자로 설정한다.
+// limit으로 파일 최대 용량 / 지금은 10MB
+// 이렇게 만들어진 upload변수는 미들웨어를 만드는 여러 가지 메소드를 가지고 있다.
+// single은 하나의 이미지를 업로드할 때 사용, none은 이미지를 올리지않고 데이터만 multipart형식으로 전송했을 때 사용 / req.file에 내용저장
+const upload = multer({
+    storage: multer.diskStorage({
+        destination(req, file, cb) {
+            cb(null, 'uploads/');
+        },
+        filename(req, file, cb) {
+            const ext = path.extname(file.originalname);
+            cb(null, path.basename(file.originalname, ext) + new Date().valueOf() + ext);
+        },
+    }),
+    limits: { fileSize: 5 * 1024 * 1024 },
+});
+
 const addUserInfo = async (req, res, next) => {
   try {
       // joi 패키지를 이용한 input값 validation과정
@@ -37,14 +60,15 @@ const addUserInfo = async (req, res, next) => {
           return;
       }
 
-      const { address, age, career, nickname, gender, univ } = req.body;
+      const { address, age, career, nickname, gender, univ, url } = req.body;
       const result = await User.update({
           address : address,
           age : age,
           career : career,
           nickname : nickname,
           gender : gender,
-          univ : univ
+          univ : univ,
+          img : url
       }, {
           //where : { id : req.user.id }
           where : { id : 1 }
@@ -91,4 +115,4 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
-export { addUserInfo, findUser, modifyUser, deleteUser }
+export { addUserInfo, findUser, modifyUser, deleteUser, upload, upload2 }
