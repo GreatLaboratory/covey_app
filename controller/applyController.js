@@ -41,7 +41,7 @@ const cancelApply = async (req, res, next) => {
         const result = await Apply.destroy({
             where : {
                 //userId : req.user.id
-                userId : 1,
+                userId : 2,
                 postId : req.params.postId
             }
         });
@@ -52,4 +52,40 @@ const cancelApply = async (req, res, next) => {
     }
 };
 
-export { applyPost, findAllApplied, cancelApply }
+// PUT -> 지원자 매칭하기
+const matching = async (req, res, next) => {
+  try {
+      await Apply.update({
+          matching: true
+      }, {
+          where : {
+              userId : req.params.userId,
+              postId : req.params.postId
+          }
+      });
+
+      const result = await Apply.findAll({
+          where : { postId : req.params.postId }
+      });
+
+      for (var i in result) {
+          if (result[i].userId == req.params.userId) {
+              continue;
+          }
+          await Apply.update({
+              matching: false
+          }, {
+              where : {
+                  userId : result[i].userId,
+                  postId : req.params.postId
+              }
+          });
+      }
+      res.status(201).json({ message : "매칭이 성사되었습니다." });
+  } catch (err) {
+      console.error(err);
+      next(err);
+  }
+};
+
+export { applyPost, findAllApplied, cancelApply, matching }
