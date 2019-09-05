@@ -1,7 +1,7 @@
 module.exports= (sequelize, DataTypes) => (
     sequelize.define("apply", {
         matching : {
-            type: DataTypes.Boolean,
+            type: DataTypes.BOOLEAN,
             allowNull: true
         }
     }, {
