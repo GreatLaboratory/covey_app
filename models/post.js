@@ -1,5 +1,10 @@
 module.exports = (sequelize, DataTypes) => (
     sequelize.define('post', {
+        category: {
+            type: DataTypes.ENUM("CAFE", "RESTAURANT", "ETC"),
+            allowNull: false,
+            defaultValue: "ETC"
+        },
         title: {
             type: DataTypes.STRING(100),
             allowNull: false
