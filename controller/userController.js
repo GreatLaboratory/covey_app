@@ -4,7 +4,7 @@ import multer from "multer"
 const { User, Apply } = require("../models");
 
 // GET -> 현재 로그인된 회원 조회
-const findUser = async (req, res, next) => {
+const findAuthorizedUser = async (req, res, next) => {
     try {
         const result = await User.findOne({
             where : { id : req.user.id }
@@ -38,6 +38,20 @@ const findApplicant = async (req, res, next) => {
     }
 };
 
+// GET -> (지원자 or 게시자)의 프로필 조회
+// 지원자는 클라이언트에서 접근할 때 user.id
+// 게시자는 클라이언트에서 접근할 때 post.userId
+const findUser = async (req, res, next) => {
+    try {
+        const user = await User.findOne({
+            where : { id : req.params.userId }
+        });
+        res.json(user);
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+};
 
 // PUT
 const upload2 = multer();
@@ -136,4 +150,4 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
-export { addUserInfo, findUser, modifyUser, deleteUser, upload, upload2, findApplicant }
+export { findAuthorizedUser, addUserInfo, findUser, modifyUser, deleteUser, upload, upload2, findApplicant }
