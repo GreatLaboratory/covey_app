@@ -1,5 +1,12 @@
 import express from "express"
-import { findAllPost, findPost, createPost, modifyPost, deletePost, findPostByUserId } from "../controller/postController"
+import {
+    findAllPost,
+    findPost,
+    createPost,
+    modifyPost,
+    deletePost,
+    findPostByUserId,
+} from "../controller/postController"
 
 const router = express.Router();
 
@@ -7,18 +14,18 @@ const router = express.Router();
 router.get("/findAllPost/:page", findAllPost);
 
 // req.params.id에 있는 post.id로 해당 게시물 조회
-router.get("/findPost/:id", findPost);
+router.get("/findPost/:postId", findPost);
 
-// req.user안에 들어있는 req.user.id로 게시한 게시물 조회
+// req.user.id로 로그인된 사용자가 게시한 게시물 목록 조회
 router.get("/findPostByUserId", findPostByUserId);
 
 // 게시물 등록
 router.post("/createPost", createPost);
 
 // req.params.id에 있는 post.id로 해당 게시물 수정
-router.put("/modifyPost/:id", modifyPost);
+router.put("/modifyPost/:postId", modifyPost);
 
 // req.params.id에 있는 post.id로 해당 게시물 삭제
-router.delete("/deletePost/:id", deletePost);
+router.delete("/deletePost/:postId", deletePost);
 
 module.exports = router;

@@ -1,7 +1,8 @@
+// 여기선 인증 관련 권한처리 없이 순수 로직에만 집중!  이후 권한처리는 router에서 미들웨어 추가로 설정
 import Joi from "joi"
-const { Post, User } = require("../models");
+const { Post, User, Apply } = require("../models");
 
-// GET
+// GET -> 모든 게시물 조회 (+ 최근 등록 순서 페이징 처리)
 const findAllPost = async (req, res, next) => {
   try {
       const selectedRows = 2;  // 한 페이지 당 select되는 레코드 갯수
@@ -22,9 +23,10 @@ const findAllPost = async (req, res, next) => {
   }
 };
 
+// GET -> post.id로 해당 게시물 조회
 const findPost = async (req, res, next) => {
     try {
-        const result = await Post.findByPk(req.params.id);
+        const result = await Post.findByPk(req.params.postId);
         if (!result) {
             res.status(404).json({ message : "Not Found"});
             return;
@@ -36,6 +38,7 @@ const findPost = async (req, res, next) => {
     }
 };
 
+// GET -> 로그인된 사용자가 게시한 게시물 목록 조회
 const findPostByUserId = async (req, res, next) => {
   try {
       // const user = await User.findOne({ where: { id : req.user.id } });
@@ -48,7 +51,7 @@ const findPostByUserId = async (req, res, next) => {
   }
 };
 
-// POST
+// POST -> 게시물 등록
 const createPost = async (req, res, next) => {
     try {
         // joi 패키지를 이용한 input값 validation과정
@@ -88,7 +91,7 @@ const createPost = async (req, res, next) => {
     }
 };
 
-// PUT
+// PUT -> post.id로 해당 게시물 수정
 const modifyPost = async (req, res, next) => {
     try {
         const { title, workingDate, workingTime, pay, address, dueDate, description } = req.body;
@@ -103,7 +106,7 @@ const modifyPost = async (req, res, next) => {
             dueDate : dueDate,
             description : description
         }, {
-            where : { id : req.params.id}
+            where : { id : req.params.postId}
         });
 
         res.status(201).json(`${result}명의 회원정보가 성공적으로 수정되었습니다.`);
@@ -113,10 +116,10 @@ const modifyPost = async (req, res, next) => {
     }
 };
 
-// DELETE
+// DELETE -> post.id로 해당 게시물 삭제
 const deletePost = async (req, res, next) => {
     try {
-        const result = await Post.destroy({ where : { id : req.params.id }});
+        const result = await Post.destroy({ where : { id : req.params.postId }});
         res.status(201).json(`${result}명의 회원정보가 성공적으로 삭제되었습니다.`);
     } catch (err) {
         console.error(err);
