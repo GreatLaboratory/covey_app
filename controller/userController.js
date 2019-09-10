@@ -1,9 +1,9 @@
 import Joi from "joi"
 import multer from "multer"
 
-const { User } = require("../models");
+const { User, Apply } = require("../models");
 
-// GET
+// GET -> 현재 로그인된 회원 조회
 const findUser = async (req, res, next) => {
     try {
         const result = await User.findOne({
@@ -19,6 +19,25 @@ const findUser = async (req, res, next) => {
         next(err);
     }
 };
+
+// GET -> 게시물 열었을 때 해당 게시물 지원자들의 닉네임과 번호의 리스트 조회
+const findApplicant = async (req, res, next) => {
+    try {
+        const applies = await Apply.findAll({ where: { postId : req.params.postId } });
+        var users = [];
+        for (var i in applies) {
+            users[i] = await User.findOne({
+                where: { id : applies[i].userId },
+                attributes: ['nickname', 'phoneNumber']
+            });
+        }
+        res.json(users);
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+};
+
 
 // PUT
 const upload2 = multer();
@@ -42,6 +61,7 @@ const upload = multer({
     limits: { fileSize: 5 * 1024 * 1024 },
 });
 
+// PUT -> sns로그인 직후 추가로 회원정보 받기
 const addUserInfo = async (req, res, next) => {
   try {
       // joi 패키지를 이용한 input값 validation과정
@@ -80,6 +100,7 @@ const addUserInfo = async (req, res, next) => {
   }
 };
 
+//PUT -> 로그인된 회원 정보 수정
 const modifyUser = async (req, res, next) => {
     try {
         const { address, age, career, nickname, gender, univ } = req.body;
@@ -104,7 +125,7 @@ const modifyUser = async (req, res, next) => {
     }
 };
 
-// DELETE
+// DELETE -> 로그인된 회원 탈퇴
 const deleteUser = async (req, res, next) => {
   try {
       const result = await User.destroy({ where : { id : req.user.id }});
@@ -115,4 +136,4 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
-export { addUserInfo, findUser, modifyUser, deleteUser, upload, upload2 }
+export { addUserInfo, findUser, modifyUser, deleteUser, upload, upload2, findApplicant }
