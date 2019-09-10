@@ -38,6 +38,10 @@ module.exports = (sequelize, DataTypes) => (
         univ : {
             type : DataTypes.STRING(15),
             allowNull: true
+        },
+        phoneNumber : {
+            type : DataTypes.STRING(15),
+            allowNull: true
         }
     }, {
         timestamps: true,
