@@ -40,14 +40,16 @@ const app = express();
 const { sequelize } = require("./models");  // db라는 객체 반환 -> 그 안에 db.sequelize가 있음
 
 // 세팅
-sequelize.sync();  // 서버 실행 시 자동으로 mysql과 연동
+sequelize.sync();  // 서버 실행 시 자동으로 mysql과 연동 / 인자로 force:true를 줄 수도 있는데 이건 모델링 변경된 점을 그대로 (DDL) 반영해주는 것 - 지양
 passportConfig(passport);  // 여기서 passport 디렉토리의 index, kakaoStrategy에 의해 설정된 함수로 passport가 설정&저장됨.
-                          // 이후 이 passport는 미들웨어에서 passport.initialize(), passport.session()으로 쓰인다.
+                           // 이후 이 passport는 미들웨어에서 passport.initialize(), passport.session()으로 쓰인다.
 app.set('port', process.env.PORT || 3000);
 
 
 //----------------------------------미들웨어 시작------------------------------------
-app.use(logger('dev'));
+if (process.env.NODE_ENV !== "test"){
+  app.use(logger('dev'));
+}
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
@@ -93,8 +95,4 @@ app.use((err, req, res, next) => {
   return res.status(apiError.status).json({message: apiError.message})
 });
 
-
-//--------------------------서버 포트 연결------------------------------------------------
-app.listen(app.get('port'), () => {
-  console.log(app.get('port'), '번 포트에서 대기중');
-});
+module.exports = app;
