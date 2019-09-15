@@ -43,9 +43,17 @@ const findApplicant = async (req, res, next) => {
 // 게시자는 클라이언트에서 접근할 때 post.userId
 const findUser = async (req, res, next) => {
     try {
+        const userId = parseInt(req.params.userId, 10);
+        if (Number.isNaN(userId)) {
+            return res.status(400).json({ message : "Bad Request"});
+        }
         const user = await User.findOne({
             where : { id : req.params.userId }
         });
+        if (!user) {
+            res.status(404).json({ message : "Not Found"});
+            return;
+        }
         res.json(user);
     } catch (err) {
         console.error(err);
