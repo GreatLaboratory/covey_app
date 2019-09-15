@@ -45,14 +45,14 @@ const cancelApply = async (req, res, next) => {
                 postId : req.params.postId
             }
         });
-        res.status(201).json(`${result}개의 지원요청이 성공적으로 삭제되었습니다.`);
+        res.status(204).json(`${result}개의 지원요청이 성공적으로 삭제되었습니다.`);
     } catch (err) {
         console.error(err);
         next(err);
     }
 };
 
-// PUT -> 지원자 매칭하기
+// PUT -> 지원자 매칭하기 / 나머지 지원자는 matching->false
 const matching = async (req, res, next) => {
   try {
       await Apply.update({
