@@ -8,12 +8,12 @@ const router = express.Router();
 router.post("/:postId", isLoggedIn, applyPost);
 
 // req.user.id로 자신이 지원한 게시물 리스트 조회
-router.get("/findAllApplied", isLoggedIn, findAllApplied);
+router.get("/appliedList", isLoggedIn, findAllApplied);
 
 // 지원 취소
-router.delete("/cancel/:postId", isLoggedIn, cancelApply);
+router.delete("/:postId", isLoggedIn, cancelApply);
 
 // 선택-매칭하기
-router.put("/matching/:postId/:userId", matching);
+router.put("/match/:postId/:userId", matching);
 
 module.exports = router;

@@ -11,21 +11,21 @@ import {
 const router = express.Router();
 
 // 모든 게시물 조회 (+ 페이징 처리)
-router.get("/findAllPost/:page", findAllPost);
+router.get("/list/:page", findAllPost);
 
-// req.params.id에 있는 post.id로 해당 게시물 조회
-router.get("/findPost/:postId", findPost);
+// req.params.postId로 해당 게시물 조회
+router.get("/:postId", findPost);
 
 // req.user.id로 로그인된 사용자가 게시한 게시물 목록 조회
-router.get("/findPostByUserId", findPostByUserId);
+router.get("/registerList", findPostByUserId);
 
 // 게시물 등록
-router.post("/createPost", createPost);
+router.post("/", createPost);
 
-// req.params.id에 있는 post.id로 해당 게시물 수정
-router.put("/modifyPost/:postId", modifyPost);
+// req.params.postId로 해당 게시물 수정
+router.put("/:postId", modifyPost);
 
-// req.params.id에 있는 post.id로 해당 게시물 삭제
-router.delete("/deletePost/:postId", deletePost);
+// req.params.postId로 해당 게시물 삭제
+router.delete("/:postId", deletePost);
 
 module.exports = router;

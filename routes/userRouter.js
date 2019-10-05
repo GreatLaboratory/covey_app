@@ -6,13 +6,13 @@ const { isLoggedIn } = require("./middleWares");
 const router = express.Router();
 
 // req.user.id로 현재 로그인된 회원 조회
-router.get("/findAuthorizedUser", isLoggedIn, findAuthorizedUser);
+router.get("/", isLoggedIn, findAuthorizedUser);
 
 // 게시물 열었을 때 지원한 자들의 닉네임과 번호의 리스트 조회
-router.get("/findApplicant/:postId", findApplicant);
+router.get("/applicants/:postId", findApplicant);
 
 // (지원자 or 게시자)의 프로필 조회
-router.get("/findUser/:userId", findUser);
+router.get("/others/:userId", findUser);
 
 // img 업로드
 fs.readdir('uploads', (error) => {
@@ -26,13 +26,13 @@ fs.readdir('uploads', (error) => {
 //     res.json({ url: `/img/${req.file.filename}` });
 // });
 
-// sns로그인 직후 추가로 회원정보 받기
-router.put("/addUserInfo", upload.single(), addUserInfo);
+// sns로그인 직후 추가로 회원정보 받기  -> 이건 밑에 있는 라우터로도 얼마든지 가능함
+// router.put("/signUp", addUserInfo);
 
 // req.user.id로 현재 로그인된 회원 정보 수정
-router.put("/modifyUser", isLoggedIn, modifyUser);
+router.put("/", isLoggedIn, modifyUser);
 
 // req.user.id로 현재 로그인된 회원 탈퇴
-router.delete("/deleteUser", isLoggedIn, deleteUser);
+router.delete("/", isLoggedIn, deleteUser);
 
 module.exports = router;
