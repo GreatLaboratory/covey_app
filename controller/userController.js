@@ -20,7 +20,7 @@ const findAuthorizedUser = async (req, res, next) => {
     }
 };
 
-// GET -> 게시물 열었을 때 해당 게시물 지원자들의 닉네임과 번호의 리스트 조회
+// GET -> 메인화면이나 게시물 목록 화면에서 게시물 클릭했을 때 해당 게시물 지원자들의 닉네임과 번호의 리스트 조회
 const findApplicant = async (req, res, next) => {
     try {
         const applies = await Apply.findAll({ where: { postId : req.params.postId } });
@@ -38,7 +38,7 @@ const findApplicant = async (req, res, next) => {
     }
 };
 
-// GET -> (지원자 or 게시자)의 프로필 조회
+// GET -> 게시물 상세보기 화면에서 닉네임 클릭했을 때 (지원자 or 게시자)의 프로필 조회
 // 지원자는 클라이언트에서 접근할 때 user.id
 // 게시자는 클라이언트에서 접근할 때 post.userId
 const findUser = async (req, res, next) => {
@@ -83,17 +83,18 @@ const upload = multer({
     limits: { fileSize: 5 * 1024 * 1024 },
 });
 
-// PUT -> sns로그인 직후 추가로 회원정보 받기
+// PUT -> sns로그인 직후 추가로 회원정보 받기  -> 중복되는 콜백함수였다.
+/*
 const addUserInfo = async (req, res, next) => {
   try {
       // joi 패키지를 이용한 input값 validation과정
       const schema = {
-          address : Joi.string().min(3).required(),
-          age : Joi.required(),
-          career : Joi.string().min(3).required(),
-          nickname : Joi.string().min(3).required(),
-          gender : Joi.string().min(3).required(),
-          univ : Joi.string().min(3).required(),
+          address : Joi.string().min(3),
+          age : Joi.number().integer(),
+          career : Joi.string().min(3),
+          nickname : Joi.string().min(3),
+          gender : Joi.string().min(3),
+          univ : Joi.string().min(3),
       };
       const joiResult = Joi.validate(req.body, schema);
       if (joiResult.error) {
@@ -113,7 +114,7 @@ const addUserInfo = async (req, res, next) => {
           img : url
       }, {
           //where : { id : req.user.id }
-          where : { id : 1 }
+          where : { id : 3 }
       });
       res.status(201).json(`${result}명의 회원정보가 성공적으로 추가되었습니다.`);
   } catch (err) {
@@ -121,10 +122,27 @@ const addUserInfo = async (req, res, next) => {
       next(err);
   }
 };
+*/
 
 //PUT -> 로그인된 회원 정보 수정
 const modifyUser = async (req, res, next) => {
     try {
+        // joi 패키지를 이용한 input값 validation과정
+        const schema = {
+            address : Joi.string().min(3),
+            age : Joi.number().integer(),
+            career : Joi.string().min(3),
+            nickname : Joi.string().min(3),
+            gender : Joi.string().min(3),
+            univ : Joi.string().min(3),
+        };
+        const joiResult = Joi.validate(req.body, schema);
+        if (joiResult.error) {
+            // 400 Bad Request
+            res.status(400).send(joiResult.error.details[0].message);
+            return;
+        }
+
         const { address, age, career, nickname, gender, univ } = req.body;
 
         // 여기서 update함수는 업데이트된 레코드의 갯수를 리턴한다. 그래서 result는 1
@@ -134,7 +152,8 @@ const modifyUser = async (req, res, next) => {
             career : career,
             nickname : nickname,
             gender : gender,
-            univ : univ
+            univ : univ,
+            img : url
         }, {
             //where : { id : req.user.id }
             where : { id : 1 }
@@ -158,4 +177,4 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
-export { findAuthorizedUser, addUserInfo, findUser, modifyUser, deleteUser, upload, upload2, findApplicant }
+export { findAuthorizedUser, findUser, modifyUser, deleteUser, findApplicant }
