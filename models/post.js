@@ -1,40 +1,45 @@
 module.exports = (sequelize, DataTypes) => (
     sequelize.define('post', {
-        category: {
-            type: DataTypes.ENUM("CAFE", "RESTAURANT", "ETC"),
-            allowNull: false,
-            defaultValue: "ETC"
-        },
         title: {
-            type: DataTypes.STRING(100),
+            type: DataTypes.STRING(50),
+            allowNull: false,
+        },
+        startDate: {
+            type: DataTypes.DATE,
             allowNull: false
         },
-         workingDate: {
-             type: DataTypes.STRING(50),
-             allowNull: true,
-         },
-        workingTime: {
-             type: DataTypes.STRING(50),
-             allowNull: true,
-         },
-        pay: {
-            type: DataTypes.STRING(30),
-            allowNull: true,
-        },
-        address: {
-            type: DataTypes.STRING(30),
-            allowNull: true,
+        endDate: {
+            type: DataTypes.DATE,
+            allowNull: false
         },
         dueDate: {
-            type : DataTypes.STRING(15),
-            allowNull: true
+            type: DataTypes.DATE,
+            allowNull: false
+        },
+        address: {  // 수정해야함
+            type: DataTypes.STRING(30),
+            allowNull: true,
+        },
+        pay: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
         },
         description: {
             type : DataTypes.STRING(50),
-            allowNull: true
-        }
+            allowNull: true,
+        },
+        category: {
+            type: DataTypes.ENUM("CAFE", "RESTAURANT", "PC", "ETC"),
+            allowNull: false,
+        },
+        img: {
+            type: DataTypes.STRING(50),
+            allowNull: false,
+        },
     }, {
         timestamps: true,
         paranoid: true,
+        tableName: 'post',
+        freezeTableName: true,
     })
 );
