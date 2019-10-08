@@ -1,6 +1,7 @@
 // passport에서 가장 중요한 두 가지는 serializeUser와 deserializeUser 이다.
 
 const kakao = require("./kakaoStrategy");
+const facebook = require('./facebookStrategy');
 const { User } = require("../models");
 
 module.exports = (passport)=>{
@@ -35,5 +36,6 @@ module.exports = (passport)=>{
     // 위의 두 개의 메소드는 passport를 사용한 세션!!!!! 처리 관련 메소드이다.
     // 처음 로그인해야하는 상황이라면 사실 kakao(passport) -> passport.serializeUser -> passport.deserializeUser 이 순서이다.
   kakao(passport);
+  facebook(passport);
 };
 
