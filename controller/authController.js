@@ -14,7 +14,7 @@ const logout = (req, res)=>{
 const sendCodeToPhone = (req, res) => {
 
     // 클라에서 받은 핸드폰번호
-    const { phoneNum } = req.body;
+    const { phoneNum } = req.body;  //  문자열이었음
 
     // 서버에서 생성한 인증번호
     const verifyNum = Math.floor(Math.random()*10000000) + 1;
@@ -45,8 +45,7 @@ const sendCodeToPhone = (req, res) => {
             content: `Covey 가입을 위한 인증번호 ${verifyNum}입니다.`
         }
     });
-
-    return res.json({ phoneNumber: phoneNum });
+    return res.json({ message: "인증번호 전송 완료" });
 };
 
 // POST -> 사용자가 입력한 인증번호로 인증
@@ -55,21 +54,21 @@ const verifyCode  = async (req, res)=> {
 
         // 클라에서 이전 요청에서 받았던 폰번호를 현재 요청할 때 끌어와서 쓸 수 있나?
         // 만약 안된다면 사용자가 직접 폰번호를 또 쳐야하는 불편
-        const {phoneNum, verifyNumFromClient} = req.body;
+        const { phoneNum, verifyNumFromClient } = req.body;  // verifyNumFromClient는 문자열
         const verifyNumFromServer = cache.get(phoneNum);
 
         if (verifyNumFromServer == verifyNumFromClient) {
             await User.update({
                 phoneNum: phoneNum,
-                phoneNumAuth: 1,
             }, {
-                where: { id: req.user.id }
+                // where: { id: req.user.id }
+                where: { id: 1 }
             });
-            res.json({message : '인증에 성공하였습니다.'});
+            res.status(201).json({message : '인증에 성공하였습니다.'});
         } else {
             // 인증번호가 일치하지않을 경우
             // ......
-            res.json({message : '인증에 실패하였습니다.'});
+            res.status(503).json({message : '인증에 실패하였습니다.'});
         }
     } catch (err) {
         console.error(err);
