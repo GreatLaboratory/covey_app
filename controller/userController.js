@@ -61,7 +61,7 @@ const findUser = async (req, res, next) => {
     }
 };
 
-// PUT
+/* PUT
 const upload2 = multer();
 // upload는 미들웨어를 만드는 객체가 된다.
 // storage에는 파일 저장 방식과 경로, 파일명 등을 설정할 수 있다.
@@ -82,6 +82,7 @@ const upload = multer({
     }),
     limits: { fileSize: 5 * 1024 * 1024 },
 });
+*/
 
 // PUT -> sns로그인 직후 추가로 회원정보 받기  -> 중복되는 콜백함수였다.
 /*
@@ -129,12 +130,12 @@ const modifyUser = async (req, res, next) => {
     try {
         // joi 패키지를 이용한 input값 validation과정
         const schema = {
-            address : Joi.string().min(3),
+            name : Joi.string().min(3),
+            gender : Joi.boolean(),
             age : Joi.number().integer(),
-            career : Joi.string().min(3),
-            nickname : Joi.string().min(3),
-            gender : Joi.string().min(3),
-            univ : Joi.string().min(3),
+            address1 : Joi.string().min(3),
+            address2 : Joi.string().min(3),
+            intro : Joi.string().min(3),
         };
         const joiResult = Joi.validate(req.body, schema);
         if (joiResult.error) {
@@ -143,17 +144,17 @@ const modifyUser = async (req, res, next) => {
             return;
         }
 
-        const { address, age, career, nickname, gender, univ } = req.body;
+        const { name, gender, age, address1, address2, intro, img } = req.body;
 
         // 여기서 update함수는 업데이트된 레코드의 갯수를 리턴한다. 그래서 result는 1
         const result = await User.update({
-            address : address,
-            age : age,
-            career : career,
-            nickname : nickname,
+            name : name,
             gender : gender,
-            univ : univ,
-            img : url
+            age : age,
+            address1 : address1,
+            address2 : address2,
+            intro : intro,
+            img : img,
         }, {
             //where : { id : req.user.id }
             where : { id : 1 }

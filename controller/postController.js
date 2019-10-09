@@ -5,6 +5,7 @@ const { Post, User } = require("../models");
 // GET -> 모든 게시물 조회 (+ 최근 등록 순서 페이징 처리)
 const findAllPost = async (req, res, next) => {
   try {
+      const { pay, address, category, filterStartDate, filterEndDate } = req.query;
       const selectedRows = 2;  // 한 페이지 당 select되는 레코드 갯수
       let pageNum = parseInt(req.params.page, 10); // 요청 페이지 넘버
       if (Number.isNaN(pageNum)) {
@@ -16,7 +17,7 @@ const findAllPost = async (req, res, next) => {
       }
       const result = await Post.findAll({
           offset : offset,
-          limit : selectedRows,   // 일단 한 페이지에 10개 로우씩 select하자
+          limit : selectedRows,
           order : [["id", "DESC"]]  // 최근 등록 순으로 정렬
       });
       res.json(result);
@@ -58,7 +59,7 @@ const findPostByUserId = async (req, res, next) => {
 const createPost = async (req, res, next) => {
     try {
         // 작성한 input값 req.body에 저장 후 db에 insert하기
-        const { title, workingDate, workingTime, pay, address, dueDate, description, category } = req.body;
+        const { title, startDate, endDate, dueDate, address1, address2, address3, pay, description, category, img1, img2, img3 } = req.body;
 
         // 중복된 제목 validation
         const posts = await Post.findAll();
@@ -70,13 +71,15 @@ const createPost = async (req, res, next) => {
         // joi 패키지를 이용한 input값 validation
         const schema = {
             title : Joi.string().required(),
-            workingDate : Joi.string().required(),
-            workingTime : Joi.string().required(),
-            pay : Joi.string().required(),
-            address : Joi.string().required(),
+            startDate : Joi.string().required(),
+            endDate : Joi.string().required(),
             dueDate : Joi.string().required(),
+            address1 : Joi.string().required(),
+            address2 : Joi.string().required(),
+            address3 : Joi.string().required(),
+            pay : Joi.required(),
             description : Joi.string().required(),
-            category: Joi.string()
+            category : Joi.string().required(),
         };
         const joiResult = Joi.validate(req.body, schema);
         if (joiResult.error) {
@@ -88,13 +91,18 @@ const createPost = async (req, res, next) => {
             //userId : req.user.id,
             userId : 2,
             title : title,
-            workingDate : workingDate,
-            workingTime : workingTime,
-            pay : pay,
-            address : address,
+            startDate : startDate,
+            endDate : endDate,
             dueDate : dueDate,
+            address1 : address1,
+            address2 : address2,
+            address3 : address3,
+            pay : pay,
             description : description,
-            category: category
+            category : category,
+            img1 : img1,
+            img2 : img2,
+            img3 : img3,
         });
 
         res.status(201).json(result);
@@ -107,17 +115,22 @@ const createPost = async (req, res, next) => {
 // PUT -> post.id로 해당 게시물 수정
 const modifyPost = async (req, res, next) => {
     try {
-        const { title, workingDate, workingTime, pay, address, dueDate, description } = req.body;
+        const { title, startDate, endDate, dueDate, address1, address2, address3, pay, description, category, img1, img2, img3 } = req.body;
 
-        // 여기서 update함수는 업데이트된 레코드의 갯수를 리턴한다. 그래서 result는 1
         await Post.update({
             title : title,
-            workingDate : workingDate,
-            workingTime : workingTime,
-            pay : pay,
-            address : address,
+            startDate : startDate,
+            endDate : endDate,
             dueDate : dueDate,
-            description : description
+            address1 : address1,
+            address2 : address2,
+            address3 : address3,
+            pay : pay,
+            description : description,
+            category : category,
+            img1 : img1,
+            img2 : img2,
+            img3 : img3,
         }, {
             where : { id : req.params.postId}
         });
