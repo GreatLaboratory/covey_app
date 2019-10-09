@@ -15,8 +15,6 @@ module.exports = (passport) => {
                 done(null, exUser);
             } else {
                 const newUser = await User.create({
-                    email: profile.email,  // email은 이렇게 받아오는게 맞는지 물어봐야할 듯
-                    name : profile.displayName,
                     snsId: profile.id
                 });
                 done(null, newUser);

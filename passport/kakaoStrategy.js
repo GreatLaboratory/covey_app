@@ -14,8 +14,6 @@ module.exports = (passport) => {
                 done(null, exUser);
             } else {
                 const newUser = await User.create({
-                    email: profile._json && profile._json.kaccount_email,
-                    name : profile.displayName,
                     snsId: profile.id
                 });
                 done(null, newUser);
