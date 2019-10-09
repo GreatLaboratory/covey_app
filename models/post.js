@@ -16,7 +16,15 @@ module.exports = (sequelize, DataTypes) => (
             type: DataTypes.DATE,
             allowNull: false
         },
-        address: {  // 수정해야함
+        address1 : {
+            type: DataTypes.STRING(10),
+            allowNull: true,
+        },
+        address2 : {
+            type: DataTypes.STRING(10),
+            allowNull: true,
+        },
+        address3 : {
             type: DataTypes.STRING(30),
             allowNull: true,
         },
@@ -32,8 +40,16 @@ module.exports = (sequelize, DataTypes) => (
             type: DataTypes.ENUM("CAFE", "RESTAURANT", "PC", "ETC"),
             allowNull: false,
         },
-        img: {
-            type: DataTypes.STRING(50),
+        img1 : {
+            type: DataTypes.STRING(200),
+            allowNull: false,
+        },
+        img2 : {
+            type: DataTypes.STRING(200),
+            allowNull: false,
+        },
+        img3 : {
+            type: DataTypes.STRING(200),
             allowNull: false,
         },
     }, {
