@@ -2,15 +2,15 @@ module.exports = (sequelize, DataTypes) => (
     sequelize.define("career", {
         name: {
             type: DataTypes.STRING(15),
-            allowNull: false,
+            allowNull: true,
         },
         job: {
             type: DataTypes.STRING(15),
-            allowNull: false,
+            allowNull: true,
         },
         period: {
             type: DataTypes.STRING(10),
-            allowNull: false,
+            allowNull: true,
         },
     }, {
         tableName: 'career',

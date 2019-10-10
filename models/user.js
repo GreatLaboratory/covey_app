@@ -9,8 +9,7 @@ module.exports = (sequelize, DataTypes) => (
         // 일단 전부 allowNull처리해놓고 기입할 때 userRouter에서 Joi패키지로 무조건 값받게끔 구현
         name: {
             type: DataTypes.STRING(30),
-            allowNull: false,
-            unique: true,
+            allowNull: true,
         },
         gender : {
             type : DataTypes.BOOLEAN,

@@ -2,19 +2,19 @@ module.exports = (sequelize, DataTypes) => (
     sequelize.define('post', {
         title: {
             type: DataTypes.STRING(50),
-            allowNull: false,
+            allowNull: true,
         },
         startDate: {
-            type: DataTypes.DATE,
-            allowNull: false
+            type: DataTypes.DATEONLY,
+            allowNull: true
         },
         endDate: {
-            type: DataTypes.DATE,
-            allowNull: false
+            type: DataTypes.DATEONLY,
+            allowNull: true
         },
         dueDate: {
-            type: DataTypes.DATE,
-            allowNull: false
+            type: DataTypes.DATEONLY,
+            allowNull: true
         },
         address1 : {
             type: DataTypes.STRING(10),
@@ -38,19 +38,19 @@ module.exports = (sequelize, DataTypes) => (
         },
         category: {
             type: DataTypes.ENUM("CAFE", "RESTAURANT", "PC", "ETC"),
-            allowNull: false,
+            allowNull: true,
         },
         img1 : {
             type: DataTypes.STRING(200),
-            allowNull: false,
+            allowNull: true,
         },
         img2 : {
             type: DataTypes.STRING(200),
-            allowNull: false,
+            allowNull: true,
         },
         img3 : {
             type: DataTypes.STRING(200),
-            allowNull: false,
+            allowNull: true,
         },
     }, {
         timestamps: true,
