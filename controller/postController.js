@@ -1,13 +1,14 @@
 // 여기선 인증 관련 권한처리 없이 순수 로직에만 집중!  이후 권한처리는 router에서 미들웨어 추가로 설정
 import Joi from "joi"
-const { Post, User } = require("../models");
+const { Post, User, Sequelize: { Op } } = require("../models");
 
 // GET -> 모든 게시물 조회 (+ 최근 등록 순서 페이징 처리)
 const findAllPost = async (req, res, next) => {
   try {
-      const { pay, address, category, filterStartDate, filterEndDate } = req.query;
-      const selectedRows = 2;  // 한 페이지 당 select되는 레코드 갯수
+      const { pay, address1, address2, category, startDate, endDate } = req.query;
+      const selectedRows = 10;  // 한 페이지 당 select되는 레코드 갯수
       let pageNum = parseInt(req.params.page, 10); // 요청 페이지 넘버
+
       if (Number.isNaN(pageNum)) {
           return res.status(400).end();
       }
@@ -16,6 +17,14 @@ const findAllPost = async (req, res, next) => {
           offset = selectedRows * (pageNum - 1);
       }
       const result = await Post.findAll({
+          where: {
+            pay : { [Op.gt]: pay },
+            category : category,
+            address1 : address1,
+            address2 : address2,
+            startDate : { [Op.lte] : endDate },
+            endDate : { [Op.gte] : startDate },
+          },
           offset : offset,
           limit : selectedRows,
           order : [["id", "DESC"]]  // 최근 등록 순으로 정렬
