@@ -52,7 +52,7 @@ const cancelApply = async (req, res, next) => {
     }
 };
 
-// PUT -> 지원자 매칭하기 / 나머지 지원자는 matching->false
+/* PUT -> 지원자 매칭하기 / 나머지 지원자는 matching->false
 const matching = async (req, res, next) => {
   try {
       await Apply.update({
@@ -87,5 +87,6 @@ const matching = async (req, res, next) => {
       next(err);
   }
 };
+*/
 
-export { applyPost, findAllApplied, cancelApply, matching }
+export { applyPost, findAllApplied, cancelApply }
