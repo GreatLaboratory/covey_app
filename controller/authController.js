@@ -42,7 +42,7 @@ const sendCodeToPhone = (req, res) => {
             type: 'sms',
             from: '01058509766',
             to: [`${phoneNum}`],
-            content: `Covey 가입을 위한 인증번호 ${verifyNum}입니다.`
+            content: `Covey 가입을 위한 인증번호는 ${verifyNum}입니다.`
         }
     });
     return res.json({ message: "인증번호 전송 완료" });
@@ -68,7 +68,7 @@ const verifyCode  = async (req, res)=> {
         } else {
             // 인증번호가 일치하지않을 경우
             // ......
-            res.status(503).json({message : '인증에 실패하였습니다.'});
+            res.status(400).json({message : '인증에 실패하였습니다.'});
         }
     } catch (err) {
         console.error(err);
