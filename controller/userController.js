@@ -1,7 +1,7 @@
 import Joi from "joi"
 import multer from "multer"
 
-const { User, Apply } = require("../models");
+const { User, Apply, Post } = require("../models");
 
 // GET -> 현재 로그인된 회원 조회
 const findAuthorizedUser = async (req, res, next) => {
@@ -23,15 +23,22 @@ const findAuthorizedUser = async (req, res, next) => {
 // GET -> 메인화면이나 게시물 목록 화면에서 게시물 클릭했을 때 해당 게시물 지원자들의 닉네임과 번호의 리스트 조회
 const findApplicant = async (req, res, next) => {
     try {
-        const applies = await Apply.findAll({ where: { postId : req.params.postId } });
-        var users = [];
-        for (var i in applies) {
-            users[i] = await User.findOne({
-                where: { id : applies[i].userId },
-                attributes: ['nickname', 'phoneNumber']
-            });
+        const post = await Post.findByPk(req.params.postId);
+
+        // if (post.userId !== 12) {
+        if (post.userId !== req.user.id) {
+            res.json([]);
+        } else {
+            const applies = await Apply.findAll({ where: { postId : req.params.postId } });
+            var users = [];
+            for (var i in applies) {
+                users[i] = await User.findOne({
+                    where: { id : applies[i].userId },
+                    attributes: ['name', 'phoneNum']
+                });
+            }
+            res.json(users);
         }
-        res.json(users);
     } catch (err) {
         console.error(err);
         next(err);
@@ -146,7 +153,6 @@ const modifyUser = async (req, res, next) => {
 
         const { name, gender, age, address1, address2, intro, img } = req.body;
 
-        // 여기서 update함수는 업데이트된 레코드의 갯수를 리턴한다. 그래서 result는 1
         const result = await User.update({
             name : name,
             gender : gender,
