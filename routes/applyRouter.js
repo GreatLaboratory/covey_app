@@ -14,6 +14,6 @@ router.get("/appliedList", isLoggedIn, findAllApplied);
 router.delete("/:postId", isLoggedIn, cancelApply);
 
 // 선택-매칭하기
-router.put("/match/:postId/:userId", matching);
+// router.put("/match/:postId/:userId", matching);
 
 module.exports = router;
