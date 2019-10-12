@@ -8,8 +8,12 @@ module.exports = (sequelize, DataTypes) => (
             type: DataTypes.STRING(15),
             allowNull: true,
         },
-        period: {
+        periodNum: {
             type: DataTypes.STRING(10),
+            allowNull: true,
+        },
+        periodUnit: {
+            type: DataTypes.ENUM("주", "개월", "년", "기타"),
             allowNull: true,
         },
     }, {
