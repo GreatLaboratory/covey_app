@@ -1,13 +1,15 @@
 import Joi from "joi"
 import multer from "multer"
 
-const { User, Apply, Post } = require("../models");
+const { User, Apply, Post, Career } = require("../models");
 
 // GET -> 현재 로그인된 회원 조회
 const findAuthorizedUser = async (req, res, next) => {
     try {
         const result = await User.findOne({
-            where : { id : req.user.id }
+            //where : { id : req.user.id }
+            where : { id : 1 },
+            include : { model : Career }  // 경력사항 리스트 보여주기
         });
         if (!result) {
             res.status(404).json({ message : "Not Found"});
@@ -19,6 +21,8 @@ const findAuthorizedUser = async (req, res, next) => {
         next(err);
     }
 };
+
+
 
 // GET -> 메인화면이나 게시물 목록 화면에서 게시물 클릭했을 때 해당 게시물 지원자들의 닉네임과 번호의 리스트 조회
 const findApplicant = async (req, res, next) => {
@@ -184,4 +188,29 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
-export { findAuthorizedUser, findUser, modifyUser, deleteUser, findApplicant }
+// POST -> 경력사항 추가
+const addCareer = async (req, res, next) => {
+  try {
+      const careerList = req.body;
+      for (var i =0; i < careerArr.length; i++) {
+          careerList[i].userId = 1;
+          // careerList[i].userId = req.user.id;
+      }
+      await Career.bulkCreate(careerList);
+      res.status(201).json({ message : '경력사항이 추가되었습니다.' })
+  } catch (err) {
+      console.error(err);
+      next(err);
+  }
+};
+
+const modifyCareer = async (req, res, next) => {
+  try {
+      await Career.bulk
+  } catch (err) {
+      console.error(err);
+      next(err);
+  }
+};
+
+export { findAuthorizedUser, findUser, modifyUser, deleteUser, findApplicant, addCareer }
