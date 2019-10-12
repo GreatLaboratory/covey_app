@@ -1,12 +1,21 @@
 import express from "express"
-import { addUserInfo, findUser, modifyUser, deleteUser, upload, findApplicant, findAuthorizedUser } from "../controller/userController"
+import {
+    addUserInfo,
+    findUser,
+    modifyUser,
+    deleteUser,
+    upload,
+    findApplicant,
+    findAuthorizedUser,
+    addCareer
+} from "../controller/userController"
 import fs from "fs";
 
 const { isLoggedIn } = require("./middleWares");
 const router = express.Router();
 
 // req.user.id로 현재 로그인된 회원 조회
-router.get("/", isLoggedIn, findAuthorizedUser);
+router.get("/", findAuthorizedUser);
 
 // 게시물 열었을 때 지원한 자들의 닉네임과 번호의 리스트 조회
 router.get("/applicants/:postId", findApplicant);
@@ -34,5 +43,8 @@ router.put("/", isLoggedIn, modifyUser);
 
 // req.user.id로 현재 로그인된 회원 탈퇴
 router.delete("/", isLoggedIn, deleteUser);
+
+// 경력사항 추가
+router.post('/career', addCareer);
 
 module.exports = router;
