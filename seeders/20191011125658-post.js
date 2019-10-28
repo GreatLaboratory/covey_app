@@ -12,6 +12,7 @@ module.exports = {
         startDate: "2019-10-01",
         endDate: "2019-10-15",
         dueDate: "2019-09-25",
+        workingTime: "11:00 ~ 20:00",
         address1: "서울특별시",
         address2: address2_arr[i%5],
         address3: "미사강변대로 165",
