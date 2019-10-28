@@ -1,18 +1,18 @@
 // 여기선 인증 관련 권한처리 없이 순수 로직에만 집중!  이후 권한처리는 router에서 미들웨어 추가로 설정
 import Joi from "joi"
 const { Post, User, Sequelize: { Op } } = require("../models");
+const selectedRows = 10;  // 한 페이지 당 select되는 레코드 갯수
 
-// GET -> 모든 게시물 조회 (+ 최근 등록 순서 페이징 처리)
+// GET -> 필터링 게시물 조회 (+ 최근 등록 순서 페이징 처리)
 const findAllPost = async (req, res, next) => {
   try {
       const { pay, address1, address2, category, startDate, endDate } = req.query;
-      const selectedRows = 10;  // 한 페이지 당 select되는 레코드 갯수
       let pageNum = parseInt(req.params.page, 10); // 요청 페이지 넘버
+      let offset = 0;
 
       if (Number.isNaN(pageNum)) {
           return res.status(400).end();
       }
-      let offset = 0;
       if(pageNum > 1){
           offset = selectedRows * (pageNum - 1);
       }
@@ -36,7 +36,61 @@ const findAllPost = async (req, res, next) => {
   }
 };
 
-// GET -> post.id로 해당 게시물 조회
+// GET -> 고수익 알바 게시물 리스트 조회
+const findHighPayPost = async (req, res, next) => {
+    try {
+        let pageNum = parseInt(req.params.page, 10); // 요청 페이지 넘버
+        let offset = 0;
+
+        if (Number.isNaN(pageNum)) {
+            return res.status(400).end();
+        }
+        if(pageNum > 1){
+            offset = selectedRows * (pageNum - 1);
+        }
+        const result = await Post.findAll({
+            offset : offset,
+            limit : selectedRows,
+            order : [["pay", "DESC"]],
+        });
+        res.json(result);
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+};
+
+// GET -> 우리 동네 알바 게시물 리스트 조회
+const findSameAddressPost = async (req, res, next) => {
+    try {
+        let pageNum = parseInt(req.params.page, 10); // 요청 페이지 넘버
+        let offset = 0;
+
+        if (Number.isNaN(pageNum)) {
+            return res.status(400).end();
+        }
+        if(pageNum > 1){
+            offset = selectedRows * (pageNum - 1);
+        }
+        const result = await Post.findAll({
+            where : {
+                // address1 : req.user.address1,
+                // address2 : req.user.address2,
+                address1 : "서울특별시",
+                address2 : "종로구",
+            },
+            offset : offset,
+            limit : selectedRows,
+            order : [["id", "DESC"]] // 최근 등록 순으로 정렬
+        });
+        res.json(result);
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+};
+
+// GET -> post.id로 해당 게시물 상세 조회
 const findPost = async (req, res, next) => {
     try {
         const result = await Post.findByPk(req.params.postId);
@@ -55,7 +109,7 @@ const findPost = async (req, res, next) => {
 const findPostByUserId = async (req, res, next) => {
   try {
       // const user = await User.findOne({ where: { id : req.user.id } });
-      const user = await User.findOne({ where: { id : 3 } });
+      const user = await User.findOne({ where: { id : 1 } });
       const posts = await user.getPosts();
       res.json(posts);
   } catch (err) {
@@ -68,7 +122,7 @@ const findPostByUserId = async (req, res, next) => {
 const createPost = async (req, res, next) => {
     try {
         // 작성한 input값 req.body에 저장 후 db에 insert하기
-        const { title, startDate, endDate, dueDate, address1, address2, address3, pay, description, category, img1, img2, img3 } = req.body;
+        const { title, startDate, endDate, dueDate, workingTime, address1, address2, address3, pay, description, category, img1, img2, img3 } = req.body;
 
         // 중복된 제목 validation
         const posts = await Post.findAll();
@@ -83,16 +137,21 @@ const createPost = async (req, res, next) => {
             startDate : Joi.string().required(),
             endDate : Joi.string().required(),
             dueDate : Joi.string().required(),
+            workingTime : Joi.string().required(),
             address1 : Joi.string().required(),
             address2 : Joi.string().required(),
             address3 : Joi.string().required(),
             pay : Joi.required(),
             description : Joi.string().required(),
             category : Joi.string().required(),
+            img1 : Joi.string(),
+            img2 : Joi.string(),
+            img3 : Joi.string(),
         };
         const joiResult = Joi.validate(req.body, schema);
         if (joiResult.error) {
             // 400 Bad Request
+            console.log("joi-bad request");
             return res.status(400).send(joiResult.error.details[0].message);
         }
 
@@ -103,6 +162,7 @@ const createPost = async (req, res, next) => {
             startDate : startDate,
             endDate : endDate,
             dueDate : dueDate,
+            workingTime : workingTime,
             address1 : address1,
             address2 : address2,
             address3 : address3,
@@ -124,13 +184,14 @@ const createPost = async (req, res, next) => {
 // PUT -> post.id로 해당 게시물 수정
 const modifyPost = async (req, res, next) => {
     try {
-        const { title, startDate, endDate, dueDate, address1, address2, address3, pay, description, category, img1, img2, img3 } = req.body;
+        const { title, startDate, endDate, dueDate, workingTime, address1, address2, address3, pay, description, category, img1, img2, img3 } = req.body;
 
         await Post.update({
             title : title,
             startDate : startDate,
             endDate : endDate,
             dueDate : dueDate,
+            workingTime : workingTime,
             address1 : address1,
             address2 : address2,
             address3 : address3,
@@ -163,4 +224,4 @@ const deletePost = async (req, res, next) => {
 };
 
 
-export { findAllPost, createPost, findPost, modifyPost, deletePost, findPostByUserId }
+export { findAllPost, createPost, findPost, modifyPost, deletePost, findPostByUserId, findHighPayPost, findSameAddressPost }
