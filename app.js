@@ -12,16 +12,7 @@ import swaggerUi from "swagger-ui-express"
 import swaggerJSDoc from "swagger-jsdoc"
 import express from "express"
 
-// const변수 설정
-const swaggerOptions = {
-  swaggerDefinition: {
-    info: {
-      title: 'covey app rest api', // Title (required)
-      version: '0.0.1', // Version (required)
-    },
-  },
-  apis: ['./routes/*'], // Path to the API docs
-};
+// const변수 할당
 const mysqlSessionOptions = {
   host: 'localhost',
   port: 3306,
@@ -29,6 +20,7 @@ const mysqlSessionOptions = {
   password: '1234',
   database: 'covey'
 };
+const swaggerOptions = require('./swagger');
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 const sessionStore = new MySQLStore(mysqlSessionOptions);
 const passportConfig = require("./passport");  // passport를 인자로 받는 익명함수 반환
@@ -36,6 +28,7 @@ const userRouter = require('./routes/userRouter');  // router라는 변수에 .g
 const authRouter = require("./routes/authRouter");  //             "
 const postRouter = require("./routes/postRouter");  //             "
 const applyRouter = require("./routes/applyRouter");  //             "
+const careerRouter = require("./routes/careerRouter");  //             "
 const app = express();
 const { sequelize } = require("./models");  // db라는 객체 반환 -> 그 안에 db.sequelize가 있음
 
@@ -74,6 +67,7 @@ app.use("/api/auth", authRouter);
 app.use('/api/user', userRouter);
 app.use("/api/post", postRouter);
 app.use("/api/apply", applyRouter);
+app.use("/api/career", careerRouter);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 //-------------------------------에러 핸들링 미들웨어 시작------------------------------
