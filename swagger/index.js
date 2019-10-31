@@ -83,7 +83,100 @@ module.exports = {
                             type: 'string'
                         },
                     }
-                }
+                },
+                'Post': {
+                    type: 'object',
+                    properties: {
+                        id: {
+                            type: 'integer'
+                        },
+                        userId: {
+                            type: 'integer'
+                        },
+                        title: {
+                            type: 'string'
+                        },
+                        startDate: {
+                            type: 'date'
+                        },
+                        endDate: {
+                            type: 'date'
+                        },
+                        dueDate: {
+                            type: 'date'
+                        },
+                        workingTime: {
+                            type: 'string'
+                        },
+                        address1: {
+                            type: 'string'
+                        },
+                        address2: {
+                            type: 'string'
+                        },
+                        address3: {
+                            type: 'string'
+                        },
+                        pay: {
+                            type: 'integer'
+                        },
+                        description: {
+                            type: 'string'
+                        },
+                        category: {
+                            type: 'string',
+                            enum: [ "CAFE", "RESTAURANT", "PC", "ETC" ]
+                        },
+                        img1: {
+                            type: 'string'
+                        },
+                        img2: {
+                            type: 'string'
+                        },
+                        img3: {
+                            type: 'string'
+                        },
+                    }
+                },
+                'Career': {
+                    type: 'object',
+                    properties: {
+                        id: {
+                            type: 'integer'
+                        },
+                        userId: {
+                            type: 'integer'
+                        },
+                        name: {
+                            type: 'string'
+                        },
+                        job: {
+                            type: 'string'
+                        },
+                        periodNum: {
+                            type: 'string'
+                        },
+                        periodUnit: {
+                            type: 'string',
+                            enum: [ "주", "개월", "년", ]
+                        },
+                    }
+                },
+                'Apply': {
+                    type: 'object',
+                    properties: {
+                        id: {
+                            type: 'integer'
+                        },
+                        userId: {
+                            type: 'integer'
+                        },
+                        postId: {
+                            type: 'integer'
+                        },
+                    }
+                },
+
             }
     },
     apis: ['./routes/*'], // Path to the API docs
