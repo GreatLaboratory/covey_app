@@ -16,6 +16,10 @@ module.exports = (sequelize, DataTypes) => (
             type: DataTypes.DATEONLY,
             allowNull: true
         },
+        isDue: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: 0
+        },
         workingTime: {
             type: DataTypes.STRING(20),
             allowNull: true
@@ -41,7 +45,7 @@ module.exports = (sequelize, DataTypes) => (
             allowNull: true,
         },
         category: {
-            type: DataTypes.ENUM("CAFE", "RESTAURANT", "PC", "ETC"),
+            type: DataTypes.ENUM("식당", "카페", "술집", "편의점", "잡화매장", "독서실", "PC방", "기타"),
             allowNull: true,
         },
         img1 : {
