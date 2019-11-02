@@ -29,7 +29,7 @@ const findAllPost = async (req, res, next) => {
           limit : selectedRows,
           order : [["id", "DESC"]]  // 최근 등록 순으로 정렬
       });
-      res.json(result);
+      res.status(200).json(result);
   }  catch (err) {
       console.error(err);
       next(err);
@@ -53,7 +53,7 @@ const findHighPayPost = async (req, res, next) => {
             limit : selectedRows,
             order : [["pay", "DESC"]],
         });
-        res.json(result);
+        res.status(200).json(result);
     } catch (err) {
         console.error(err);
         next(err);
@@ -83,7 +83,7 @@ const findSameAddressPost = async (req, res, next) => {
             limit : selectedRows,
             order : [["id", "DESC"]] // 최근 등록 순으로 정렬
         });
-        res.json(result);
+        res.status(200).json(result);
     } catch (err) {
         console.error(err);
         next(err);
@@ -94,11 +94,7 @@ const findSameAddressPost = async (req, res, next) => {
 const findPost = async (req, res, next) => {
     try {
         const result = await Post.findByPk(req.params.postId);
-        if (!result) {
-            res.status(404).json({ message : "Not Found"});
-            return;
-        }
-        res.json(result);
+        res.status(200).json(result);
     } catch (err) {
         console.error(err);
         next(err);
@@ -108,10 +104,11 @@ const findPost = async (req, res, next) => {
 // GET -> 로그인된 사용자가 게시한 게시물 목록 조회
 const findPostByUserId = async (req, res, next) => {
   try {
+
       // const user = await User.findOne({ where: { id : req.user.id } });
       const user = await User.findOne({ where: { id : 1 } });
       const posts = await user.getPosts();
-      res.json(posts);
+      res.status(200).json(posts);
   } catch (err) {
       console.error(err);
       next(err);
@@ -121,8 +118,11 @@ const findPostByUserId = async (req, res, next) => {
 // POST -> 게시물 등록
 const createPost = async (req, res, next) => {
     try {
+        // 업로드 테스트 콘솔
+        console.log(req.files);
+
         // 작성한 input값 req.body에 저장 후 db에 insert하기
-        const { title, startDate, endDate, dueDate, workingTime, address1, address2, address3, pay, description, category, img1, img2, img3 } = req.body;
+        const { title, startDate, endDate, dueDate, workingTime, address1, address2, address3, pay, description, category } = req.body;
 
         // 중복된 제목 validation
         const posts = await Post.findAll();
@@ -144,9 +144,6 @@ const createPost = async (req, res, next) => {
             pay : Joi.required(),
             description : Joi.string().required(),
             category : Joi.string().required(),
-            img1 : Joi.string(),
-            img2 : Joi.string(),
-            img3 : Joi.string(),
         };
         const joiResult = Joi.validate(req.body, schema);
         if (joiResult.error) {
@@ -155,7 +152,21 @@ const createPost = async (req, res, next) => {
             return res.status(400).send(joiResult.error.details[0].message);
         }
 
-        const result = Post.create({
+        if(req.files.img1 !=null && req.files.img2==null && req.files.img3==null) {
+            var imgUrl1 = `/img/${req.files.img1[0].filename}`;
+            var imgUrl2 = null;
+            var imgUrl3 = null;
+        } else if (req.files.img1 !=null  && req.files.img2!=null && req.files.img3==null) {
+            var imgUrl1 = `/img/${req.files.img1[0].filename}`;
+            var imgUrl2 = `/img/${req.files.img2[0].filename}`;
+            var imgUrl3 = null;
+        } else {
+            var imgUrl1 = `/img/${req.files.img1[0].filename}`;
+            var imgUrl2 = `/img/${req.files.img2[0].filename}`;
+            var imgUrl3 = `/img/${req.files.img3[0].filename}`;
+        }
+
+        await Post.create({
             //userId : req.user.id,
             userId : 2,
             title : title,
@@ -169,12 +180,12 @@ const createPost = async (req, res, next) => {
             pay : pay,
             description : description,
             category : category,
-            img1 : img1,
-            img2 : img2,
-            img3 : img3,
+            img1 : imgUrl1,
+            img2 : imgUrl2,
+            img3 : imgUrl3,
         });
 
-        res.status(201).json(result);
+        res.status(201).json({ message : '성공적으로 게시물이 등록되었습니다.' });
     } catch (err) {
         console.error(err);
         next(err);
@@ -184,7 +195,21 @@ const createPost = async (req, res, next) => {
 // PUT -> post.id로 해당 게시물 수정
 const modifyPost = async (req, res, next) => {
     try {
-        const { title, startDate, endDate, dueDate, workingTime, address1, address2, address3, pay, description, category, img1, img2, img3 } = req.body;
+        const { title, startDate, endDate, dueDate, workingTime, address1, address2, address3, pay, description, category } = req.body;
+
+        if(req.files.img1 !=null && req.files.img2==null && req.files.img3==null) {
+            var imgUrl1 = `/img/${req.files.img1[0].filename}`;
+            var imgUrl2 = null;
+            var imgUrl3 = null;
+        } else if (req.files.img1 !=null  && req.files.img2!=null && req.files.img3==null) {
+            var imgUrl1 = `/img/${req.files.img1[0].filename}`;
+            var imgUrl2 = `/img/${req.files.img2[0].filename}`;
+            var imgUrl3 = null;
+        } else {
+            var imgUrl1 = `/img/${req.files.img1[0].filename}`;
+            var imgUrl2 = `/img/${req.files.img2[0].filename}`;
+            var imgUrl3 = `/img/${req.files.img3[0].filename}`;
+        }
 
         await Post.update({
             title : title,
@@ -198,14 +223,14 @@ const modifyPost = async (req, res, next) => {
             pay : pay,
             description : description,
             category : category,
-            img1 : img1,
-            img2 : img2,
-            img3 : img3,
+            img1 : imgUrl1,
+            img2 : imgUrl2,
+            img3 : imgUrl3,
         }, {
-            where : { id : req.params.postId}
+            where : { id : req.params.postId }
         });
-        const updatedPost = await Post.findOne({where: { title: title }});
-        res.status(201).json(updatedPost);
+        await Post.findOne({ where: { title: title }});
+        res.status(201).json({ message : '성공적으로 게시물이 수정되었습니다.' });
     } catch (err) {
         console.error(err);
         next(err);
@@ -215,13 +240,26 @@ const modifyPost = async (req, res, next) => {
 // DELETE -> post.id로 해당 게시물 삭제
 const deletePost = async (req, res, next) => {
     try {
-        const result = await Post.destroy({ where : { id : req.params.postId }});
-        res.status(201).json(`${result}명의 회원정보가 성공적으로 삭제되었습니다.`);
+        await Post.destroy({ where : { id : req.params.postId }});
+        res.status(204).json({ message : '성공적으로 게시물이 삭제되었습니다.' });
+    } catch (err) {
+        console.error(err);
+        next(err);
+}
+};
+
+const duePost = async (req, res, next) => {
+    try {
+        await Post.update({
+            isDue : 1,
+        }, {
+            where : { id : req.params.postId }
+        });
+        res.status(201).json({ message : '성공적으로 마감이 완료되었습니다.' });
     } catch (err) {
         console.error(err);
         next(err);
     }
-};
+}
 
-
-export { findAllPost, createPost, findPost, modifyPost, deletePost, findPostByUserId, findHighPayPost, findSameAddressPost }
+export { findAllPost, createPost, findPost, modifyPost, deletePost, findPostByUserId, findHighPayPost, findSameAddressPost , duePost}

@@ -1,4 +1,5 @@
 import Joi from "joi"
+import fs from 'fs'
 import multer from "multer"
 
 const { User, Apply, Post, Career } = require("../models");
@@ -8,20 +9,19 @@ const findAuthorizedUser = async (req, res, next) => {
     try {
         const result = await User.findOne({
             //where : { id : req.user.id }
-            where : { id : 1 },
+            where : { id : 5 },
             include : { model : Career }  // 경력사항 리스트 보여주기
         });
         if (!result) {
             res.status(404).json({ message : "Not Found"});
             return;
         }
-        res.json(result);
+        res.status(200).json(result);
     } catch (err) {
         console.error(err);
         next(err);
     }
 };
-
 
 
 // GET -> 메인화면이나 게시물 목록 화면에서 게시물 클릭했을 때 해당 게시물 지원자들의 닉네임과 번호의 리스트 조회
@@ -31,7 +31,7 @@ const findApplicant = async (req, res, next) => {
 
         // if (post.userId !== 12) {
         if (post.userId !== req.user.id) {
-            res.json([]);
+            res.status(204).json([]);
         } else {
             const applies = await Apply.findAll({ where: { postId : req.params.postId } });
             var users = [];
@@ -41,7 +41,7 @@ const findApplicant = async (req, res, next) => {
                     attributes: ['name', 'phoneNum']
                 });
             }
-            res.json(users);
+            res.status(200).json(users);
         }
     } catch (err) {
         console.error(err);
@@ -65,7 +65,7 @@ const findUser = async (req, res, next) => {
             res.status(404).json({ message : "Not Found"});
             return;
         }
-        res.json(user);
+        res.status(200).json(user);
     } catch (err) {
         console.error(err);
         next(err);
@@ -74,12 +74,12 @@ const findUser = async (req, res, next) => {
 
 /* PUT
 const upload2 = multer();
-// upload는 미들웨어를 만드는 객체가 된다.
-// storage에는 파일 저장 방식과 경로, 파일명 등을 설정할 수 있다.
-// diskStorage를 사용해 이미지가 서버 디스크에 저장되도록 했고 destination메소드로 저장경로를 uploads폴더로 지정한다.
-// 파일명은 filename메소드로 기존이름+날짜+기존확장자로 설정한다.
-// limit으로 파일 최대 용량 / 지금은 10MB
-// 이렇게 만들어진 upload변수는 미들웨어를 만드는 여러 가지 메소드를 가지고 있다.
+// upload는 미들웨어를 만드는 객체가 된다
+// 이렇게 만들어진 upload변수는 미들웨어를.
+// // storage에는 파일 저장 방식과 경로, 파일명 등을 설정할 수 있다.
+// // diskStorage를 사용해 이미지가 서버 디스크에 저장되도록 했고 destination메소드로 저장경로를 uploads폴더로 지정한다.
+// // 파일명은 filename메소드로 기존이름+날짜+기존확장자로 설정한다.
+// // limit으로 파일 최대 용량 / 지금은 10MB 만드는 여러 가지 메소드를 가지고 있다.
 // single은 하나의 이미지를 업로드할 때 사용, none은 이미지를 올리지않고 데이터만 multipart형식으로 전송했을 때 사용 / req.file에 내용저장
 const upload = multer({
     storage: multer.diskStorage({
@@ -139,6 +139,9 @@ const addUserInfo = async (req, res, next) => {
 //PUT -> 로그인된 회원 정보 수정
 const modifyUser = async (req, res, next) => {
     try {
+        // 업로드 테스트 콘솔
+        console.log(req.file);
+
         // joi 패키지를 이용한 input값 validation과정
         const schema = {
             name : Joi.string().min(3),
@@ -151,26 +154,32 @@ const modifyUser = async (req, res, next) => {
         const joiResult = Joi.validate(req.body, schema);
         if (joiResult.error) {
             // 400 Bad Request
-            res.status(400).send(joiResult.error.details[0].message);
+            res.status(400).json({ message : joiResult.error.details[0].message });
             return;
         }
 
-        const { name, gender, age, address1, address2, intro, img } = req.body;
+        const { name, gender, age, address1, address2, intro } = req.body;
 
-        const result = await User.update({
+        if(req.file !=null) {
+            var imgUrl = `/img/${req.file.filename}`;
+        } else {
+            var imgUrl = null;
+        }
+
+        await User.update({
             name : name,
             gender : gender,
             age : age,
             address1 : address1,
             address2 : address2,
             intro : intro,
-            img : img,
+            img : imgUrl,
         }, {
             //where : { id : req.user.id }
             where : { id : 1 }
         });
 
-        res.status(201).json(`${result}명의 회원정보가 성공적으로 수정되었습니다.`);
+        res.status(201).json({ message : '성공적으로 수정되었습니다.' });
     } catch (err) {
         console.error(err);
         next(err);
@@ -180,37 +189,12 @@ const modifyUser = async (req, res, next) => {
 // DELETE -> 로그인된 회원 탈퇴
 const deleteUser = async (req, res, next) => {
   try {
-      const result = await User.destroy({ where : { id : req.user.id }});
-      res.status(201).json(`${result}명의 회원정보가 성공적으로 삭제되었습니다.`);
+      await User.destroy({ where : { id : req.user.id }});
+      res.status(204).json({ message : '성공적으로 삭제되었습니다.' });
   } catch (err) {
       console.error(err);
       next(err);
   }
 };
 
-// POST -> 경력사항 추가
-const addCareer = async (req, res, next) => {
-  try {
-      const careerList = req.body;
-      for (var i =0; i < careerArr.length; i++) {
-          careerList[i].userId = 1;
-          // careerList[i].userId = req.user.id;
-      }
-      await Career.bulkCreate(careerList);
-      res.status(201).json({ message : '경력사항이 추가되었습니다.' })
-  } catch (err) {
-      console.error(err);
-      next(err);
-  }
-};
-
-const modifyCareer = async (req, res, next) => {
-  try {
-      await Career.bulk
-  } catch (err) {
-      console.error(err);
-      next(err);
-  }
-};
-
-export { findAuthorizedUser, findUser, modifyUser, deleteUser, findApplicant, addCareer }
+export { findAuthorizedUser, findUser, modifyUser, deleteUser, findApplicant }
