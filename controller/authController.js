@@ -7,7 +7,7 @@ const { User } = require('../models');
 const logout = (req, res)=>{
     req.logout();  // req.user객체를 제거하는 역할
     req.session.destroy();  // req.session 객체내용 제거 역할
-    res.json({ message : "로그아웃에 성공하였습니다."});
+    res.status(204).json({ message : "로그아웃에 성공하였습니다."});
 };
 
 // POST -> 폰번호 입력받고 해당 번호로 인증번호 발송
@@ -18,7 +18,6 @@ const sendCodeToPhone = (req, res) => {
 
     // 서버에서 생성한 인증번호
     const verifyNum = Math.floor(Math.random()*10000000) + 1;
-
     // 만약 클라에서 입력받은 폰번호가 키값으로 이미 메모리캐시에 올라가져있다면 먼저 있던걸 삭제
     cache.del(phoneNum);
 
@@ -45,7 +44,7 @@ const sendCodeToPhone = (req, res) => {
             content: `Covey 가입을 위한 인증번호는 ${verifyNum}입니다.`
         }
     });
-    return res.json({ message: "인증번호 전송 완료" });
+    return res.status(201).json({ message: "인증번호 전송 완료" });
 };
 
 // POST -> 사용자가 입력한 인증번호로 인증
@@ -68,7 +67,7 @@ const verifyCode  = async (req, res)=> {
         } else {
             // 인증번호가 일치하지않을 경우
             // ......
-            res.status(400).json({message : '인증에 실패하였습니다.'});
+            res.status(401).json({message : '인증에 실패하였습니다.'});
         }
     } catch (err) {
         console.error(err);

@@ -9,7 +9,7 @@ const findCareerList = async (req, res, next) => {
               userId : 5
           }
       });
-      res.json(careerList);
+      res.status(200).json(careerList);
   } catch (err) {
       console.error(err);
       next(err);
@@ -24,7 +24,7 @@ const findCareer = async (req, res, next) => {
             res.status(404).json({ message : "Not Found"});
             return;
         }
-        res.json(result);
+        res.status(200).json(result);
     } catch (err) {
         console.error(err);
         next(err);
@@ -73,7 +73,7 @@ const modifyCareer = async (req, res, next) => {
 const deleteCareer = async (req, res, next) => {
     try {
         await Career.destroy({ where : { id : req.params.careerId }});
-        res.status(201).json({ message : '성공적으로 경력사항을 삭제하였습니다.' });
+        res.status(204).json({ message : '성공적으로 경력사항을 삭제하였습니다.' });
     } catch (err) {
         console.error(err);
         next(err);

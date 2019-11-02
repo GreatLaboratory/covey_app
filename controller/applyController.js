@@ -3,12 +3,12 @@ const { Post, Apply } = require("../models");
 // POST -> 게시물 지원하기
 const applyPost = async (req, res, next) => {
     try {
-        const result = await Apply.create({
+        await Apply.create({
             //userId : req.user.id,
             userId : 2,
             postId : req.params.postId
         });
-        res.status(201).json(`${result}개의 게시물이 성공적으로 지원되었습니다.`);
+        res.status(201).json({ message : '지원에 성공했습니다.' });
     } catch (err) {
         console.error(err);
         next(err);
@@ -28,7 +28,7 @@ const findAllApplied = async (req, res, next) => {
                 where : { id : result[i].postId }
             });
         }
-        res.json(post);
+        res.status(200).json(post);
     } catch (err) {
         console.error(err);
         next(err);
@@ -38,55 +38,18 @@ const findAllApplied = async (req, res, next) => {
 // DELETE -> 지원 취소
 const cancelApply = async (req, res, next) => {
     try {
-        const result = await Apply.destroy({
+        await Apply.destroy({
             where : {
                 //userId : req.user.id
                 userId : 2,
                 postId : req.params.postId
             }
         });
-        res.status(204).json(`${result}개의 지원요청이 성공적으로 삭제되었습니다.`);
+        res.status(204).json({ message : '삭제에 성공했습니다.' });
     } catch (err) {
         console.error(err);
         next(err);
     }
 };
-
-/* PUT -> 지원자 매칭하기 / 나머지 지원자는 matching->false
-const matching = async (req, res, next) => {
-  try {
-      await Apply.update({
-          matching: true
-      }, {
-          where : {
-              userId : req.params.userId,
-              postId : req.params.postId
-          }
-      });
-
-      const result = await Apply.findAll({
-          where : { postId : req.params.postId }
-      });
-
-      for (var i in result) {
-          if (result[i].userId == req.params.userId) {
-              continue;
-          }
-          await Apply.update({
-              matching: false
-          }, {
-              where : {
-                  userId : result[i].userId,
-                  postId : req.params.postId
-              }
-          });
-      }
-      res.status(201).json({ message : "매칭이 성사되었습니다." });
-  } catch (err) {
-      console.error(err);
-      next(err);
-  }
-};
-*/
 
 export { applyPost, findAllApplied, cancelApply }
