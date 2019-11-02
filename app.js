@@ -11,6 +11,7 @@ import MySQLStore from "express-mysql-session"
 import swaggerUi from "swagger-ui-express"
 import swaggerJSDoc from "swagger-jsdoc"
 import express from "express"
+import path from 'path'
 
 // const변수 할당
 const mysqlSessionOptions = {
@@ -43,6 +44,7 @@ app.set('port', process.env.PORT || 3000);
 if (process.env.NODE_ENV !== "test"){
   app.use(logger('dev'));
 }
+app.use("/img", express.static(path.join(__dirname, "uploads")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
