@@ -8,9 +8,15 @@ import {
     findPostByUserId,
     findHighPayPost,
     findSameAddressPost,
+    duePost,
 } from "../controller/postController"
 
 const router = express.Router();
+const { upload } = require('./middleWares')
+
+
+// req.user.id로 로그인된 사용자가 게시한 게시물 목록 조회
+router.get("/registerList", findPostByUserId);
 
 // 모든 게시물 조회 (+ 페이징 처리)
 router.get("/list/:page", findAllPost);
@@ -24,17 +30,17 @@ router.get("/addressList/:page", findSameAddressPost);
 // req.params.postId로 해당 게시물 상세 조회
 router.get("/:postId", findPost);
 
-// req.user.id로 로그인된 사용자가 게시한 게시물 목록 조회
-router.get("/registerList", findPostByUserId);
-
 // 게시물 등록
-router.post("/", createPost);
+router.post("/", upload.fields([{ name: 'img1' }, { name: 'img2' }, { name: 'img3' }]), createPost);
 
 // req.params.postId로 해당 게시물 수정
-router.put("/:postId", modifyPost);
+router.put("/:postId", upload.fields([{ name: 'img1' }, { name: 'img2' }, { name: 'img3' }]), modifyPost);
 
 // req.params.postId로 해당 게시물 삭제
 router.delete("/:postId", deletePost);
+
+// req.params.postId로 해당 게시물 마감하기
+router.put('/due/:postId', duePost);
 
 /**
  * @swagger
@@ -67,10 +73,14 @@ router.delete("/:postId", deletePost);
  *         items:
  *           type: string
  *           enum:
- *             - "ETC"
- *             - "CAFE"
- *             - "RESTAURANT"
- *             - "PC"
+ *             - "식당"
+ *             - "카페"
+ *             - "술집"
+ *             - "편의점"
+ *             - "잡화매장"
+ *             - "독서실"
+ *             - "PC방"
+ *             - "기타"
  *       - name: address1
  *         in: query
  *         description: 시
@@ -179,7 +189,7 @@ router.delete("/:postId", deletePost);
  *           3. 날짜는 2019-09-30 이 형식으로
  *           4. workingTime은 11:00 ~ 20:00 이 형식으로
  *           5. address1는 시/도, address2는 구/시, address3는 도로명 및 상세주소 (ex:서울특별시 / 중랑구 / 동일로136길 15)
- *           6. category는 "CAFE", "RESTAURANT", "PC", "ETC" 중에 하나로
+ *           6. category는 ["식당", "카페", "술집", "편의점", "잡화매장", "독서실", "PC방", "기타"] 중에 하나로
  *         required: true
  *         schema:
  *           $ref: '#/definitions/Post'
@@ -209,8 +219,7 @@ router.delete("/:postId", deletePost);
  *   get:
  *     tags:
  *       - PostRouter
- *     name: registerList
- *     summary: 로그인된 사용자가 게시한 게시물 목록 조회 (404 무한에러 아직 해결 못함 - 미완성)
+ *     summary: 로그인된 사용자가 게시한 게시물 목록 조회
  *     consumes:
  *       - application/json
  *     responses:
@@ -234,7 +243,7 @@ router.delete("/:postId", deletePost);
  *           2. 날짜는 2019-09-30 이 형식으로
  *           3. workingTime은 11:00 ~ 20:00 이 형식으로
  *           4. address1는 시/도, address2는 구/시, address3는 도로명 및 상세주소 (ex:서울특별시 / 중랑구 / 동일로136길 15)
- *           5. category는 "CAFE", "RESTAURANT", "PC", "ETC" 중에 하나로
+ *           5. category는 ["식당", "카페", "술집", "편의점", "잡화매장", "독서실", "PC방", "기타"] 중에 하나로
  *         required: true
  *         schema:
  *           $ref: '#/definitions/Post'
@@ -247,5 +256,23 @@ router.delete("/:postId", deletePost);
  *         description: Not Found
  *       409:
  *         description: 중복된 제목 충돌
+ * /api/post/due/{postId}:
+ *   put:
+ *     tags:
+ *       - PostRouter
+ *     summary: 게시물 마감하기
+ *     consumes:
+ *       - application/json
+ *     parameters:
+ *       - name: postId
+ *         in: path
+ *         description: 게시물 번호
+ *         required: true
+ *         type: integer
+ *     responses:
+ *       201:
+ *         description: 마감 성공
+ *       404:
+ *         description: Not Found
  */
 module.exports = router;
