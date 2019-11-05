@@ -88,7 +88,7 @@ module.exports = {
                     type: 'object',
                     properties: {
                         id: {
-                            type: 'integer'
+                            type: 'integer',
                         },
                         userId: {
                             type: 'integer'
@@ -97,16 +97,22 @@ module.exports = {
                             type: 'string'
                         },
                         startDate: {
-                            type: 'date'
+                            type: 'string',
+                            format: 'date'
                         },
                         endDate: {
-                            type: 'date'
+                            type: 'string',
+                            format: 'date'
                         },
                         dueDate: {
-                            type: 'date'
+                            type: 'string',
+                            format: 'date'
+                        },
+                        isDue: {
+                            type: 'boolean'
                         },
                         workingTime: {
-                            type: 'string'
+                            type: 'string',
                         },
                         address1: {
                             type: 'string'
@@ -125,7 +131,7 @@ module.exports = {
                         },
                         category: {
                             type: 'string',
-                            enum: [ "CAFE", "RESTAURANT", "PC", "ETC" ]
+                            enum: [ "식당", "카페", "술집", "편의점", "잡화매장", "독서실", "PC방", "기타" ]
                         },
                         img1: {
                             type: 'string'
