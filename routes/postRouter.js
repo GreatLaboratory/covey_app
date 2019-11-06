@@ -9,10 +9,11 @@ import {
     findHighPayPost,
     findSameAddressPost,
     duePost,
+    findCategoryPost,
 } from "../controller/postController"
 
 const router = express.Router();
-const { upload } = require('./middleWares')
+const { isLoggedIn, upload } = require('./middleWares')
 
 
 // req.user.id로 로그인된 사용자가 게시한 게시물 목록 조회
@@ -21,11 +22,14 @@ router.get("/registerList", findPostByUserId);
 // 모든 게시물 조회 (+ 페이징 처리)
 router.get("/list/:page", findAllPost);
 
-// 고수익 알바 게시물 리스트 조회
+// 고수익 알바 게시물 리스트 조회 (+ 페이징 처리)
 router.get("/payList/:page", findHighPayPost);
 
-// 우리 동네 알바 게시물 리스트 조회
+// 우리 동네 알바 게시물 리스트 조회 (+ 페이징 처리)
 router.get("/addressList/:page", findSameAddressPost);
+
+// 해당 카테고리의 게시물 리스트 조회 (+ 페이징 처리)
+router.get('/categoryList/:page', findCategoryPost);
 
 // req.params.postId로 해당 게시물 상세 조회
 router.get("/:postId", findPost);
@@ -51,7 +55,7 @@ router.put('/due/:postId', duePost);
  *   get:
  *     tags:
  *       - PostRouter
- *     summary: 필터링 거친 게시물 리스트 조회 (+페이징)
+ *     summary: 필터링 거친 게시물 리스트 조회 (+페이징) -> 메인-필터링 검색
  *     consumes:
  *       - application/json
  *     parameters:
@@ -114,7 +118,7 @@ router.put('/due/:postId', duePost);
  *   get:
  *     tags:
  *       - PostRouter
- *     summary: 시급 높은 순서대로 게시물 리스트 조회(+페이징) -> 고수익 대타
+ *     summary: 시급 높은 순서대로 게시물 리스트 조회(+페이징) -> 메인-고수익 대타
  *     consumes:
  *       - application/json
  *     parameters:
@@ -134,7 +138,7 @@ router.put('/due/:postId', duePost);
  *   get:
  *     tags:
  *       - PostRouter
- *     summary: 주소(시와 구)가 같은 게시물 리스트 조회(+페이징) -> 우리동네 대타
+ *     summary: 주소(시와 구)가 같은 게시물 리스트 조회(+페이징) -> 메인-우리동네 대타
  *     consumes:
  *       - application/json
  *     parameters:
@@ -143,6 +147,42 @@ router.put('/due/:postId', duePost);
  *         description: 페이지 번호
  *         required: true
  *         type: integer
+ *     responses:
+ *       200:
+ *         description: 리스트 조회 성공
+ *       400:
+ *         description: 잘못된 파라미터
+ *       404:
+ *         description: Not Found
+ * /api/post/categoryList/{page}:
+ *   get:
+ *     tags:
+ *       - PostRouter
+ *     summary: 선택한 업종과 같은 업종의 게시물 리스트 조회(+페이징) -> 메인-상단 업종 카테고리
+ *     consumes:
+ *       - application/json
+ *     parameters:
+ *       - name: page
+ *         in: path
+ *         description: 페이지 번호
+ *         required: true
+ *         type: integer
+ *       - name: category
+ *         in: query
+ *         description: 업종
+ *         required: true
+ *         type: array
+ *         items:
+ *           type: string
+ *           enum:
+ *             - "식당"
+ *             - "카페"
+ *             - "술집"
+ *             - "편의점"
+ *             - "잡화매장"
+ *             - "독서실"
+ *             - "PC방"
+ *             - "기타"
  *     responses:
  *       200:
  *         description: 리스트 조회 성공

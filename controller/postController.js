@@ -24,6 +24,7 @@ const findAllPost = async (req, res, next) => {
             address2 : address2,
             startDate : { [Op.lte] : endDate },
             endDate : { [Op.gte] : startDate },
+            isDue : false,
           },
           offset : offset,
           limit : selectedRows,
@@ -49,6 +50,9 @@ const findHighPayPost = async (req, res, next) => {
             offset = selectedRows * (pageNum - 1);
         }
         const result = await Post.findAll({
+            where : {
+                isDue : false,
+            },
             offset : offset,
             limit : selectedRows,
             order : [["pay", "DESC"]],
@@ -78,10 +82,40 @@ const findSameAddressPost = async (req, res, next) => {
                 // address2 : req.user.address2,
                 address1 : "서울특별시",
                 address2 : "종로구",
+                isDue : false,
             },
             offset : offset,
             limit : selectedRows,
             order : [["id", "DESC"]] // 최근 등록 순으로 정렬
+        });
+        res.status(200).json(result);
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+};
+
+// GET -> 해당 카테고리의 게시물 리스트 조회
+const findCategoryPost = async (req, res, next) => {
+    try {
+        const { category } = req.query;
+        let pageNum = parseInt(req.params.page, 10); // 요청 페이지 넘버
+        let offset = 0;
+
+        if (Number.isNaN(pageNum)) {
+            return res.status(400).end();
+        }
+        if(pageNum > 1){
+            offset = selectedRows * (pageNum - 1);
+        }
+        const result = await Post.findAll({
+            where: {
+                category : category,
+                isDue : false,
+            },
+            offset : offset,
+            limit : selectedRows,
+            order : [["id", "DESC"]]  // 최근 등록 순으로 정렬
         });
         res.status(200).json(result);
     } catch (err) {
@@ -245,9 +279,10 @@ const deletePost = async (req, res, next) => {
     } catch (err) {
         console.error(err);
         next(err);
-}
+    }
 };
 
+// PUT -> post.id로 해당 게시물 마감하기
 const duePost = async (req, res, next) => {
     try {
         await Post.update({
@@ -260,6 +295,6 @@ const duePost = async (req, res, next) => {
         console.error(err);
         next(err);
     }
-}
+};
 
-export { findAllPost, createPost, findPost, modifyPost, deletePost, findPostByUserId, findHighPayPost, findSameAddressPost , duePost}
+export { findAllPost, createPost, findPost, modifyPost, deletePost, findPostByUserId, findHighPayPost, findSameAddressPost , duePost, findCategoryPost}
