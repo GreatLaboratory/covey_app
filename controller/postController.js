@@ -153,7 +153,7 @@ const findPostByUserId = async (req, res, next) => {
 const createPost = async (req, res, next) => {
     try {
         // 업로드 테스트 콘솔
-        console.log(req.files);
+        console.log('업로드 테스트 : ' + req.files);
 
         // 작성한 input값 req.body에 저장 후 db에 insert하기
         const { title, startDate, endDate, dueDate, workingTime, address1, address2, address3, pay, description, category } = req.body;
@@ -168,14 +168,14 @@ const createPost = async (req, res, next) => {
         // joi 패키지를 이용한 input값 validation
         const schema = {
             title : Joi.string().required(),
-            startDate : Joi.string().required(),
-            endDate : Joi.string().required(),
-            dueDate : Joi.string().required(),
+            startDate : Joi.date().required(),
+            endDate : Joi.date().required(),
+            dueDate : Joi.date().required(),
             workingTime : Joi.string().required(),
             address1 : Joi.string().required(),
             address2 : Joi.string().required(),
             address3 : Joi.string().required(),
-            pay : Joi.required(),
+            pay : Joi.number().required(),
             description : Joi.string().required(),
             category : Joi.string().required(),
         };
