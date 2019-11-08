@@ -31,6 +31,30 @@ router.post('/verify', verifyCode);
  * tags:
  *   name: AuthRouter
  *   description: 회원가입 & 로그인관련 api
+ * /api/auth/kakao:
+ *   get:
+ *     tags:
+ *       - AuthRouter
+ *     summary: 카카오 회원가입
+ *     consumes:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: 회원가입 및 로그인 성공
+ *       404:
+ *         description: Not Found
+ * /api/auth/facebook:
+ *   get:
+ *     tags:
+ *       - AuthRouter
+ *     summary: 페이스북 회원가입 (미완성)
+ *     consumes:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: 회원가입 및 로그인 성공
+ *       404:
+ *         description: Not Found
  * /api/auth/logout:
  *   get:
  *     tags:
