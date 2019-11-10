@@ -3,8 +3,8 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     let datas = [];
-    for(let i = 0; i < 10; i++){
-      const address2_arr = ["강남구", "송파구", "강동구", "종로구", "중랑구"];
+    for(let i = 0; i < 100; i++){
+      const address2_arr = ["강남구", "강동구",  "강북구",  "관악구",  "동대문구", "송파구", "강동구", "종로구", "중랑구"];
       let obj = {
         snsId: "145489721156",
         name: "testUser" + (i+1),
