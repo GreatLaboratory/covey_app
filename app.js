@@ -4,7 +4,7 @@ require("dotenv").config();
 // npm으로 받은 패키지 불러오기
 import createError from "http-errors"
 import cookieParser from "cookie-parser"
-import logger from "morgan"
+import morgan from "morgan"
 import session from "express-session"
 import passport from "passport"
 import MySQLStore from "express-mysql-session"
@@ -12,6 +12,9 @@ import swaggerUi from "swagger-ui-express"
 import swaggerJSDoc from "swagger-jsdoc"
 import express from "express"
 import path from 'path'
+import http from 'http'
+import https from 'https'
+import fs from 'fs'
 
 // const변수 할당
 const mysqlSessionOptions = {
@@ -21,6 +24,7 @@ const mysqlSessionOptions = {
   password: '1234',
   database: 'covey'
 };
+const logger = require('./logger');
 const swaggerOptions = require('./swagger');
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 const sessionStore = new MySQLStore(mysqlSessionOptions);
@@ -42,7 +46,7 @@ app.set('port', process.env.PORT || 3000);
 
 //----------------------------------미들웨어 시작------------------------------------
 if (process.env.NODE_ENV !== "test"){
-  app.use(logger('dev'));
+  app.use(morgan('dev'));
 }
 app.use("/img", express.static(path.join(__dirname, "uploads")));
 app.use(express.json());
@@ -75,6 +79,9 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 //-------------------------------에러 핸들링 미들웨어 시작------------------------------
 app.use((req, res, next) => {
   next(createError(404));
+  logger.info('hello');
+  logger.error('npm start dididididie');
+
 });
 
 app.use((err, req, res, next) => {
@@ -82,6 +89,8 @@ app.use((err, req, res, next) => {
 
   if (!err.status) {
     apiError = createError(err)
+    logger.info('hello');
+    logger.error(apiError.message);
   }
 
   // set locals, only providing error in development
@@ -91,4 +100,15 @@ app.use((err, req, res, next) => {
   return res.status(apiError.status).json({message: apiError.message})
 });
 
-module.exports = app;
+//--------------------------------서버 애플리케이션 실행-----------------------------
+// const options = {
+//     key: fs.readFileSync('test/fixtures/keys/agent2-key.pem'),
+//     cert: fs.readFileSync('test/fixtures/keys/agent2-cert.cert')
+// };
+
+http.createServer(app).listen(app.get('port'), () => {
+  console.log(app.get('port'), '번 포트에서 대기중');
+});
+// https.createServer(options, app).listen(443, () => {
+//     console.log('443번 포트에서 대기중');
+// });
