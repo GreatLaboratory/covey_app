@@ -19,5 +19,7 @@ module.exports = (sequelize, DataTypes) => (
     }, {
         tableName: 'career',
         freezeTableName: true,
+        charset : 'utf8',
+        collate : 'utf8_general_ci'
     })
 );

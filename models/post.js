@@ -65,5 +65,7 @@ module.exports = (sequelize, DataTypes) => (
         paranoid: true,
         tableName: 'post',
         freezeTableName: true,
+        charset : 'utf8',
+        collate : 'utf8_general_ci'
     })
 );
