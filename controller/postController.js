@@ -78,10 +78,10 @@ const findSameAddressPost = async (req, res, next) => {
         }
         const result = await Post.findAll({
             where : {
-                // address1 : req.user.address1,
-                // address2 : req.user.address2,
-                address1 : "서울특별시",
-                address2 : "종로구",
+                address1 : req.user.address1,
+                address2 : req.user.address2,
+                // address1 : "서울특별시",
+                // address2 : "종로구",
                 isDue : false,
             },
             offset : offset,
@@ -139,8 +139,8 @@ const findPost = async (req, res, next) => {
 const findPostByUserId = async (req, res, next) => {
   try {
 
-      // const user = await User.findOne({ where: { id : req.user.id } });
-      const user = await User.findOne({ where: { id : 1 } });
+      const user = await User.findOne({ where: { id : req.user.id } });
+      // const user = await User.findOne({ where: { id : 1 } });
       const posts = await user.getPosts();
       res.status(200).json(posts);
   } catch (err) {
@@ -201,8 +201,8 @@ const createPost = async (req, res, next) => {
         }
 
         await Post.create({
-            //userId : req.user.id,
-            userId : 2,
+            userId : req.user.id,
+            // userId : 2,
             title : title,
             startDate : startDate,
             endDate : endDate,

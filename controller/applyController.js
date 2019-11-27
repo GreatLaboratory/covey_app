@@ -4,8 +4,8 @@ const { Post, Apply } = require("../models");
 const applyPost = async (req, res, next) => {
     try {
         await Apply.create({
-            //userId : req.user.id,
-            userId : 2,
+            userId : req.user.id,
+            // userId : 2,
             postId : req.params.postId
         });
         res.status(201).json({ message : '지원에 성공했습니다.' });
@@ -19,8 +19,8 @@ const applyPost = async (req, res, next) => {
 const findAllApplied = async (req, res, next) => {
     try {
         const result = await Apply.findAll({
-            // where : { userId : req.user.id }
-            where : { userId : 2 }
+            where : { userId : req.user.id }
+            // where : { userId : 2 }
         });
         var post = [];
         for (var i in result) {
@@ -40,8 +40,8 @@ const cancelApply = async (req, res, next) => {
     try {
         await Apply.destroy({
             where : {
-                //userId : req.user.id
-                userId : 2,
+                userId : req.user.id,
+                // userId : 2,
                 postId : req.params.postId
             }
         });

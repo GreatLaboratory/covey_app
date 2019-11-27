@@ -5,8 +5,8 @@ const findCareerList = async (req, res, next) => {
   try {
       const careerList = await Career.findAll({
           where : {
-              // userId : req.user.id
-              userId : 5
+              userId : req.user.id
+              // userId : 5
           }
       });
       res.status(200).json(careerList);
@@ -36,8 +36,8 @@ const createCareer = async (req, res, next) => {
     try {
         const { name, job, periodNum, periodUnit } = req.body;
         await Career.create({
-            // userId : req.user.id,
-            userId : 5,
+            userId : req.user.id,
+            // userId : 5,
             name : name,
             job : job,
             periodNum : periodNum,
