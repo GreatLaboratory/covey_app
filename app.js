@@ -12,9 +12,8 @@ import swaggerUi from "swagger-ui-express"
 import swaggerJSDoc from "swagger-jsdoc"
 import express from "express"
 import path from 'path'
-import http from 'http'
-import https from 'https'
-import fs from 'fs'
+import helmet from 'helmet'
+import hpp from 'hpp'
 
 // const변수 할당
 const mysqlSessionOptions = {
@@ -42,17 +41,7 @@ sequelize.sync();  // 서버 실행 시 자동으로 mysql과 연동 / 인자로
 passportConfig(passport);  // 여기서 passport 디렉토리의 index, kakaoStrategy에 의해 설정된 함수로 passport가 설정&저장됨.
                            // 이후 이 passport는 미들웨어에서 passport.initialize(), passport.session()으로 쓰인다.
 app.set('port', process.env.PORT || 3000);
-
-
-//----------------------------------미들웨어 시작------------------------------------
-if (process.env.NODE_ENV !== "test"){
-  app.use(morgan('dev'));
-}
-app.use("/img", express.static(path.join(__dirname, "uploads")));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser(process.env.COOKIE_SECRET));
-app.use(session({
+const sessionOptions = {
   resave: false,
   saveUninitialized: false,
   secret: process.env.COOKIE_SECRET,
@@ -61,7 +50,26 @@ app.use(session({
     httpOnly: true,
     secure: false,
   },
-}));
+};
+
+//----------------------------------미들웨어 시작------------------------------------
+if (process.env.NODE_ENV === "production"){
+  mysqlSessionOptions.host = process.env.PRODUCTION_URL;
+  sessionOptions.proxy = true;
+  sessionOptions.cookie.secure = true;
+  sessionOptions.cookie.httpOnly = false;
+  app.use(morgan('combined'));
+  app.use(helmet());
+  app.use(hpp());
+} else {
+  app.use(morgan('dev'));
+}
+app.use("/img", express.static(path.join(__dirname, "uploads")));
+app.use(express.json());
+app.use(express.static('public'));
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser(process.env.COOKIE_SECRET));
+app.use(session(sessionOptions));
 app.use(passport.initialize());  // 요청req에 passport설정을 심고
 app.use(passport.session());  // req.session 객체에 passport 정보를 저장한다.
                               // req.session객체는 express-session에서 생성하므로 express-session미들웨어보다 뒤에 연결되어야 한다.
@@ -79,9 +87,6 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 //-------------------------------에러 핸들링 미들웨어 시작------------------------------
 app.use((req, res, next) => {
   next(createError(404));
-  logger.info('hello');
-  logger.error('npm start dididididie');
-
 });
 
 app.use((err, req, res, next) => {
@@ -101,14 +106,37 @@ app.use((err, req, res, next) => {
 });
 
 //--------------------------------서버 애플리케이션 실행-----------------------------
+// const lex = greenlock.create({
+//   version: 'draft-11', // 버전2
+//   configDir: '/etc/letsencrypt',
+//   server: 'https://acme-staging-v02.api.letsencrypt.org/directory',
+//   store: greenlock_store,
+//   approveDomains: (opts, certs, cb) => {
+//     if (certs) {
+//       opts.domains = ['localhost'];
+//     } else {
+//       opts.email = 'wowo0201@gmail.com';
+//       opts.agreeTos = true;
+//     }
+//     cb(null, { options: opts, certs });
+//   },
+//   renewWithin: 81 * 24 * 60 * 60 * 1000,
+//   renewBy: 80 * 24 * 60 * 60 * 1000,
+// });
+
+
 // const options = {
 //     key: fs.readFileSync('test/fixtures/keys/agent2-key.pem'),
 //     cert: fs.readFileSync('test/fixtures/keys/agent2-cert.cert')
 // };
 
-http.createServer(app).listen(app.get('port'), () => {
-  console.log(app.get('port'), '번 포트에서 대기중');
-});
+// http.createServer(app).listen(app.get('port'), () => {
+//   console.log(app.get('port'), '번 포트에서 대기중');
+// });
 // https.createServer(options, app).listen(443, () => {
 //     console.log('443번 포트에서 대기중');
 // });
+
+// https.createServer(lex.httpsOptions, lex.middleware(app)).listen(443);
+
+module.exports = app;
