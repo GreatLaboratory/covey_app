@@ -9,7 +9,8 @@ module.exports = {
             description: 'Endpoints to test the covey application routers'
         },
         // 주소
-        host: "localhost:3000",
+        // host: "localhost:3000",
+        host: "www.coveyyy.tk",
         // 기본 root path
         // basePath: "/api/",
         // 각 api에서 설명을 기록할 때 사용할 constant들을 미리 등록해놓는것
