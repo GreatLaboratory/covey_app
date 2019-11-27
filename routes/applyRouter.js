@@ -1,17 +1,17 @@
 import express from "express"
-import { findAllApplied, applyPost, cancelApply, matching} from "../controller/applyController"
+import { findAllApplied, applyPost, cancelApply } from "../controller/applyController"
 
 const { isLoggedIn } = require("./middleWares");
 const router = express.Router();
 
 // 게시물 지원하기
-router.post("/:postId", applyPost);
+router.post("/:postId", isLoggedIn, applyPost);
 
 // 지원 취소
-router.delete("/:postId", cancelApply);
+router.delete("/:postId", isLoggedIn, cancelApply);
 
 // req.user.id로 자신이 지원한 게시물 리스트 조회
-router.get("/appliedList", findAllApplied);
+router.get("/appliedList", isLoggedIn, findAllApplied);
 
 /**
  * @swagger

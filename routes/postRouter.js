@@ -17,7 +17,7 @@ const { isLoggedIn, upload } = require('./middleWares')
 
 
 // req.user.id로 로그인된 사용자가 게시한 게시물 목록 조회
-router.get("/registerList", findPostByUserId);
+router.get("/registerList", isLoggedIn, findPostByUserId);
 
 // 모든 게시물 조회 (+ 페이징 처리)
 router.get("/list/:page", findAllPost);
@@ -35,16 +35,16 @@ router.get('/categoryList/:page', findCategoryPost);
 router.get("/:postId", findPost);
 
 // 게시물 등록
-router.post("/", upload.fields([{ name: 'img1' }, { name: 'img2' }, { name: 'img3' }]), createPost);
+router.post("/", isLoggedIn, upload.fields([{ name: 'img1' }, { name: 'img2' }, { name: 'img3' }]), createPost);
 
 // req.params.postId로 해당 게시물 수정
-router.put("/:postId", upload.fields([{ name: 'img1' }, { name: 'img2' }, { name: 'img3' }]), modifyPost);
+router.put("/:postId", isLoggedIn, upload.fields([{ name: 'img1' }, { name: 'img2' }, { name: 'img3' }]), modifyPost);
 
 // req.params.postId로 해당 게시물 삭제
-router.delete("/:postId", deletePost);
+router.delete("/:postId", isLoggedIn, deletePost);
 
 // req.params.postId로 해당 게시물 마감하기
-router.put('/due/:postId', duePost);
+router.put('/due/:postId', isLoggedIn, duePost);
 
 /**
  * @swagger

@@ -47,7 +47,7 @@ router.post('/verify', verifyCode);
  *   get:
  *     tags:
  *       - AuthRouter
- *     summary: 페이스북 회원가입 (미완성)
+ *     summary: 페이스북 회원가입
  *     consumes:
  *       - application/json
  *     responses:

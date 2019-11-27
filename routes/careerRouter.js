@@ -8,21 +8,22 @@ import {
 } from "../controller/careerController"
 
 const router = express.Router();
+const { isLoggedIn } = require('./middleWares');
 
 // 현재 로그인된 사용자의 경력사항 리스트 조회
-router.get('/list', findCareerList);
+router.get('/list', isLoggedIn, findCareerList);
 
 // 클릭한 경력사항 정보 조회
-router.get('/:careerId', findCareer);
+router.get('/:careerId', isLoggedIn, findCareer);
 
 // 현재 로그인된 사용자의 경력사항 추가하기
-router.post('/', createCareer);
+router.post('/', isLoggedIn, createCareer);
 
 // 현재 로그인된 사용자의 경력사항 수정하기
-router.put('/:careerId', modifyCareer);
+router.put('/:careerId', isLoggedIn, modifyCareer);
 
 // 현재 로그인된 사용자의 경력사항 삭제하기
-router.delete('/:careerId', deleteCareer);
+router.delete('/:careerId', isLoggedIn, deleteCareer);
 
 /**
  * @swagger
