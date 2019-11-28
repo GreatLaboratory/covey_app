@@ -14,6 +14,10 @@ import express from "express"
 import path from 'path'
 import helmet from 'helmet'
 import hpp from 'hpp'
+import http from 'http'
+import https from 'https'
+import greenlock from 'greenlock-express'
+import greenlock_store from 'greenlock-store-fs'
 
 // const변수 할당
 const mysqlSessionOptions = {
@@ -54,7 +58,6 @@ const sessionOptions = {
 
 //----------------------------------미들웨어 시작------------------------------------
 if (process.env.NODE_ENV === "production"){
-  mysqlSessionOptions.host = process.env.PRODUCTION_URL;
   sessionOptions.proxy = true;
   sessionOptions.cookie.secure = true;
   sessionOptions.cookie.httpOnly = false;
@@ -106,37 +109,25 @@ app.use((err, req, res, next) => {
 });
 
 //--------------------------------서버 애플리케이션 실행-----------------------------
-// const lex = greenlock.create({
-//   version: 'draft-11', // 버전2
-//   configDir: '/etc/letsencrypt',
-//   server: 'https://acme-staging-v02.api.letsencrypt.org/directory',
-//   store: greenlock_store,
-//   approveDomains: (opts, certs, cb) => {
-//     if (certs) {
-//       opts.domains = ['localhost'];
-//     } else {
-//       opts.email = 'wowo0201@gmail.com';
-//       opts.agreeTos = true;
-//     }
-//     cb(null, { options: opts, certs });
-//   },
-//   renewWithin: 81 * 24 * 60 * 60 * 1000,
-//   renewBy: 80 * 24 * 60 * 60 * 1000,
-// });
+const lex = greenlock.create({
+  version: 'v02', // 버전2
+  configDir: '/etc/letsencrypt',
+  server: 'https://acme-v02.api.letsencrypt.org/directory',
+  store: greenlock_store,
+  approveDomains: (opts, certs, cb) => {
+    if (certs) {
+      opts.domains = ['coveyyy.tk', 'www.coveyyy.tk'];
+    } else {
+      opts.email = 'wowo0201@gmail.com';
+      opts.agreeTos = true;
+    }
+    cb(null, { options: opts, certs });
+  },
+  renewWithin: 81 * 24 * 60 * 60 * 1000,
+  renewBy: 80 * 24 * 60 * 60 * 1000,
+});
 
-
-// const options = {
-//     key: fs.readFileSync('test/fixtures/keys/agent2-key.pem'),
-//     cert: fs.readFileSync('test/fixtures/keys/agent2-cert.cert')
-// };
-
-// http.createServer(app).listen(app.get('port'), () => {
-//   console.log(app.get('port'), '번 포트에서 대기중');
-// });
-// https.createServer(options, app).listen(443, () => {
-//     console.log('443번 포트에서 대기중');
-// });
-
-// https.createServer(lex.httpsOptions, lex.middleware(app)).listen(443);
-
-module.exports = app;
+https.createServer(lex.httpsOptions, lex.middleware(app)).listen(443, () => {
+  console.log('443번 포트에서 대기중');
+});
+http.createServer(lex.middleware(require('redirect-https')())).listen(80);

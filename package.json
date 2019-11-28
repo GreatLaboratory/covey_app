@@ -7,7 +7,7 @@
   "author": "wowo0201@gmail.com",
   "scripts": {
     "start": "cross-env NODE_ENV=production nodemon app.js --exec babel-node --presets @babel/preset-env",
-    "dev": "cross-env NODE_ENV=development nodemon app.js --exec babel-node --presets @babel/preset-env",
+    "dev": "cross-env NODE_ENV=development nodemon server.js --exec babel-node --presets @babel/preset-env",
     "test": "mocha --require @babel/register"
   },
   "dependencies": {
@@ -19,7 +19,8 @@
     "express": "~4.16.1",
     "express-mysql-session": "^2.1.0",
     "express-session": "^1.16.2",
-    "greenlock-express": "^3.1.1",
+    "greenlock-express": "^2.7.9",
+    "greenlock-store-fs": "^3.2.2",
     "helmet": "^3.21.2",
     "hpp": "^0.2.2",
     "http-errors": "~1.6.3",
@@ -32,6 +33,7 @@
     "passport-facebook": "^3.0.0",
     "passport-kakao": "0.0.5",
     "pm2": "^4.2.0",
+    "redirect-https": "^1.3.0",
     "request": "^2.88.0",
     "sequelize": "^5.15.1",
     "swagger-jsdoc": "^3.4.0",

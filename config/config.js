@@ -12,10 +12,9 @@ module.exports = {
       username : 'root',
       password : process.env.SEQUELIZE_PASSWORD,
       database : 'covey',
-      host : process.env.PRODUCTION_URL,
+      host : 'localhost',
       dialect : 'mysql',
-      operatorsAliases : 'false',
-      logging : 'false'
+      operatorsAliases : 'false'
   },
     test: {
         username: "root",
