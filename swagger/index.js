@@ -47,7 +47,7 @@ module.exports = {
                 }
             }
         },
-        schemes: ["https"], // 가능한 통신 방식
+        schemes: ["http", "https"], // 가능한 통신 방식
         definitions:  // 모델 정의
             {
                 'User': {
