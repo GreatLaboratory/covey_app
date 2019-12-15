@@ -30,3 +30,4 @@ $ sequelize db:seed:undo:all
 4. 게시물 지원하기
 5. 이미지 업로드
 6. swagger api 문서정리, 테스트
+7. ios개발 중 api호출단계에서 보안이슈로 인해 https 적용 (letsencrypt, greenlock)
